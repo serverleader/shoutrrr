@@ -8,7 +8,7 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/mattn/go-colorable v0.1.14
-	github.com/onsi/ginkgo/v2 v2.22.1
+	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
