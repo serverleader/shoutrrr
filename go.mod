@@ -10,11 +10,11 @@ require (
 	github.com/onsi/gomega v1.27.8
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
-	golang.org/x/oauth2 v0.11.0
+	golang.org/x/oauth2 v0.26.0
 )
 
 require (
-	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	golang.org/x/net v0.14.0
 )
 
