@@ -3,7 +3,7 @@ module github.com/containrrr/shoutrrr
 go 1.18
 
 require (
-	github.com/fatih/color v1.15.0
+	github.com/fatih/color v1.18.0
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/mattn/go-colorable v0.1.14
 	github.com/onsi/ginkgo/v2 v2.11.0
