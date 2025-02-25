@@ -16,7 +16,7 @@ import (
 // Service providing Discord as a notification service.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
@@ -36,11 +36,11 @@ const (
 func (service *Service) Send(message string, params *types.Params) error {
 	var firstErr error
 
-	if service.config.JSON {
-		postURL := CreateAPIURLFromConfig(service.config)
+	if service.Config.JSON {
+		postURL := CreateAPIURLFromConfig(service.Config)
 		firstErr = doSend([]byte(message), postURL)
 	} else {
-		batches := CreateItemsFromPlain(message, service.config.SplitLines)
+		batches := CreateItemsFromPlain(message, service.Config.SplitLines)
 		for _, items := range batches {
 			if err := service.sendItems(items, params); err != nil {
 				service.Log(err)
@@ -67,7 +67,7 @@ func (service *Service) SendItems(items []types.MessageItem, params *types.Param
 func (service *Service) sendItems(items []types.MessageItem, params *types.Params) error {
 	var err error
 
-	config := *service.config
+	config := *service.Config
 	if err = service.pkr.UpdateConfigFromParams(&config, params); err != nil {
 		return err
 	}
@@ -117,14 +117,14 @@ func CreateItemsFromPlain(plain string, splitLines bool) (batches [][]types.Mess
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.Config = &Config{}
+	service.pkr = format.NewPropKeyResolver(service.Config)
 
-	if err := service.pkr.SetDefaultProps(service.config); err != nil {
+	if err := service.pkr.SetDefaultProps(service.Config); err != nil {
 		return err
 	}
 
-	if err := service.config.SetURL(configURL); err != nil {
+	if err := service.Config.SetURL(configURL); err != nil {
 		return err
 	}
 
