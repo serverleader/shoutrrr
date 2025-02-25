@@ -27,6 +27,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64,linux/386,linux/arm/v6
+
       - name: Set up Go
         uses: actions/setup-go@5a083d0e9a84784eb32078397cf5459adecb4c40
         with:
@@ -58,4 +63,4 @@ jobs:
         uses: actions/attest-build-provenance@v2
         if: success()
         with:
-          subject-path: "dist/**/*"
+          subject-path: "dist/*.tar.gz dist/*.zip"
