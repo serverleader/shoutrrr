@@ -19,6 +19,14 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
+      - name: Setup Go
+        uses: actions/setup-go@5a083d0e9a84784eb32078397cf5459adecb4c40
+        with:
+          go-version: "1.24"
+
+      - name: Generate Service Config Docs
+        run: ./generate-service-config-docs.sh
+
       - name: Setup Python
         uses: actions/setup-python@6ca8e8598faa206f7140a65ba31b899bebe16f58
         with:
