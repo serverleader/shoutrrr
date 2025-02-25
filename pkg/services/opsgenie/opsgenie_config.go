@@ -1,7 +1,6 @@
 package opsgenie
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -75,7 +74,14 @@ func (config *Config) SetURL(url *url.URL) error {
 // instead of rebuilding it's model from reflection.
 func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) error {
 	config.Host = url.Hostname()
-	config.APIKey = url.Path[1:]
+
+	if url.String() != "opsgenie://dummy@dummy.com" {
+		if len(url.Path) > 0 {
+			config.APIKey = url.Path[1:]
+		} else {
+			return fmt.Errorf("API key missing from config URL path")
+		}
+	}
 
 	if url.Port() != "" {
 		port, err := strconv.ParseUint(url.Port(), 10, 16)
@@ -91,12 +97,6 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 	for key, vals := range url.Query() {
 		if err := resolver.Set(key, vals[0]); err != nil {
 			return err
-		}
-	}
-
-	if url.String() != "opsgenie://dummy@dummy.com" {
-		if config.APIKey == "" {
-			return errors.New("API key is required")
 		}
 	}
 
