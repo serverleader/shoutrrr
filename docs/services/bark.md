@@ -1,6 +1,6 @@
 # Bark
 
-Upstream docs: https://github.com/Finb/Bark
+Upstream docs: <https://github.com/Finb/Bark>
 
 ## URL Format
 

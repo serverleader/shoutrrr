@@ -1,8 +1,8 @@
 package smtp
 
 import (
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
 type encMethod int
@@ -21,7 +21,7 @@ type encMethodVals struct {
 	Enum types.EnumFormatter
 }
 
-// EncMethods is the enum helper for populating the Encryption field
+// EncMethods is the enum helper for populating the Encryption field.
 var EncMethods = &encMethodVals{
 	None:        0,
 	ExplicitTLS: 1,
@@ -52,5 +52,5 @@ func useImplicitTLS(encryption encMethod, port uint16) bool {
 	}
 }
 
-// ImplicitTLSPort is de facto standard SMTPS port
+// ImplicitTLSPort is de facto standard SMTPS port.
 const ImplicitTLSPort = 465

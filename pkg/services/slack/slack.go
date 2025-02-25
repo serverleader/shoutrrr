@@ -4,17 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/util/jsonclient"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/util/jsonclient"
+
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
-// Service sends notifications to a pre-configured channel or user
+// Service sends notifications to a pre-configured channel or user.
 type Service struct {
 	standard.Standard
 	config *Config
@@ -25,7 +26,7 @@ const (
 	apiPostMessage = "https://slack.com/api/chat.postMessage"
 )
 
-// Send a notification message to Slack
+// Send a notification message to Slack.
 func (service *Service) Send(message string, params *types.Params) error {
 	config := service.config
 
@@ -49,14 +50,13 @@ func (service *Service) Send(message string, params *types.Params) error {
 	return nil
 }
 
-// Initialize loads ServiceConfig from configURL and sets logger for this Service
+// Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 	service.config = &Config{}
 	service.pkr = format.NewPropKeyResolver(service.config)
 
 	return service.config.setURL(&service.pkr, configURL)
-
 }
 
 func (service *Service) sendAPI(config *Config, payload interface{}) error {
@@ -72,6 +72,7 @@ func (service *Service) sendAPI(config *Config, payload interface{}) error {
 		if response.Error != "" {
 			return fmt.Errorf("api response: %v", response.Error)
 		}
+
 		return fmt.Errorf("unknown error")
 	}
 
@@ -87,12 +88,14 @@ func (service *Service) sendWebhook(config *Config, payload interface{}) error {
 	if err != nil {
 		return fmt.Errorf("failed to marshal payload: %w", err)
 	}
+
 	res, err := http.Post(config.Token.WebhookURL(), jsonclient.ContentType, bytes.NewBuffer(payloadBytes))
 	if err != nil {
 		return fmt.Errorf("failed to invoke webhook: %w", err)
 	}
+
 	defer res.Body.Close()
-	resBytes, _ := ioutil.ReadAll(res.Body)
+	resBytes, _ := io.ReadAll(res.Body)
 	response := string(resBytes)
 
 	switch response {
@@ -107,5 +110,4 @@ func (service *Service) sendWebhook(config *Config, payload interface{}) error {
 	default:
 		return fmt.Errorf("webhook response: %v", response)
 	}
-
 }

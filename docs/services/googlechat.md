@@ -5,7 +5,7 @@
 Your Google Chat Incoming Webhook URL will look like this:
 
 !!! info ""
-    https://chat.googleapis.com/v1/spaces/__`FOO`__/messages?key=__`bar`__&token=__`baz`__
+    <https://chat.googleapis.com/v1/spaces/__`FOO`__/messages?key=__`bar`__&token=__`baz`>__
 
 The shoutrrr service URL should look like this:
 
@@ -32,6 +32,5 @@ room menu.
 
 4. Copy the URL.
 ![Screenshot 4](googlechat/hangouts-4.png)
-
 
 5. Format the service URL by replacing `https` with `googlechat`.

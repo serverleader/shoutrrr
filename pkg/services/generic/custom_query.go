@@ -5,13 +5,16 @@ import (
 	"strings"
 )
 
-const extraPrefix = '$'
-const headerPrefix = '@'
-const caseOffset = 'a' - 'A'
+const (
+	extraPrefix  = '$'
+	headerPrefix = '@'
+	caseOffset   = 'a' - 'A'
+)
 
 func normalizedHeaderKey(key string) string {
 	sb := strings.Builder{}
 	sb.Grow(len(key) * 2)
+
 	for i, c := range key {
 		if 'A' <= c && c <= 'Z' {
 			// Char is uppercase
@@ -23,8 +26,10 @@ func normalizedHeaderKey(key string) string {
 			// First char, or previous was dash
 			c -= caseOffset
 		}
+
 		sb.WriteRune(c)
 	}
+
 	return sb.String()
 }
 
@@ -32,6 +37,7 @@ func appendCustomQueryValues(query url.Values, headers map[string]string, extraD
 	for key, value := range headers {
 		query.Set(string(headerPrefix)+key, value)
 	}
+
 	for key, value := range extraData {
 		query.Set(string(extraPrefix)+key, value)
 	}
@@ -50,7 +56,9 @@ func stripCustomQueryValues(query url.Values) (headers, extraData map[string]str
 		} else {
 			continue
 		}
+
 		delete(query, key)
 	}
+
 	return headers, extraData
 }

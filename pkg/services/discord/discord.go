@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
-	"github.com/containrrr/shoutrrr/pkg/util"
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/util"
 )
 
-// Service providing Discord as a notification service
+// Service providing Discord as a notification service.
 type Service struct {
 	standard.Standard
 	config *Config
@@ -28,11 +28,11 @@ var limits = types.MessageLimit{
 
 const (
 	hookURL = "https://discord.com/api/webhooks"
-	// Only search this many runes for a good split position
+	// Only search this many runes for a good split position.
 	maxSearchRunes = 100
 )
 
-// Send a notification message to discord
+// Send a notification message to discord.
 func (service *Service) Send(message string, params *types.Params) error {
 	var firstErr error
 
@@ -44,6 +44,7 @@ func (service *Service) Send(message string, params *types.Params) error {
 		for _, items := range batches {
 			if err := service.sendItems(items, params); err != nil {
 				service.Log(err)
+
 				if firstErr == nil {
 					firstErr = err
 				}
@@ -54,10 +55,11 @@ func (service *Service) Send(message string, params *types.Params) error {
 	if firstErr != nil {
 		return fmt.Errorf("failed to send discord notification: %v", firstErr)
 	}
+
 	return nil
 }
 
-// SendItems sends items with additional meta data and richer appearance
+// SendItems sends items with additional meta data and richer appearance.
 func (service *Service) SendItems(items []types.MessageItem, params *types.Params) error {
 	return service.sendItems(items, params)
 }
@@ -71,6 +73,7 @@ func (service *Service) sendItems(items []types.MessageItem, params *types.Param
 	}
 
 	var payload WebhookPayload
+
 	payload, err = CreatePayloadFromItems(items, config.Title, config.LevelColors())
 	if err != nil {
 		return err
@@ -80,16 +83,18 @@ func (service *Service) sendItems(items []types.MessageItem, params *types.Param
 	payload.AvatarURL = config.Avatar
 
 	var payloadBytes []byte
+
 	payloadBytes, err = json.Marshal(payload)
 	if err != nil {
 		return err
 	}
 
 	postURL := CreateAPIURLFromConfig(&config)
+
 	return doSend(payloadBytes, postURL)
 }
 
-// CreateItemsFromPlain creates a set of MessageItems that is compatible with Discords webhook payload
+// CreateItemsFromPlain creates a set of MessageItems that is compatible with Discords webhook payload.
 func CreateItemsFromPlain(plain string, splitLines bool) (batches [][]types.MessageItem) {
 	if splitLines {
 		return util.MessageItemsFromLines(plain, limits)
@@ -98,16 +103,18 @@ func CreateItemsFromPlain(plain string, splitLines bool) (batches [][]types.Mess
 	for {
 		items, omitted := util.PartitionMessage(plain, limits, maxSearchRunes)
 		batches = append(batches, items)
+
 		if omitted == 0 {
 			break
 		}
+
 		plain = plain[len(plain)-omitted:]
 	}
 
 	return
 }
 
-// Initialize loads ServiceConfig from configURL and sets logger for this Service
+// Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 	service.config = &Config{}
@@ -124,7 +131,7 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return nil
 }
 
-// CreateAPIURLFromConfig takes a discord config object and creates a post url
+// CreateAPIURLFromConfig takes a discord config object and creates a post url.
 func CreateAPIURLFromConfig(config *Config) string {
 	return fmt.Sprintf(
 		"%s/%s/%s",

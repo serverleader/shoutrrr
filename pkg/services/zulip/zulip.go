@@ -6,11 +6,11 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
-// Service sends notifications to a pre-configured channel or user
+// Service sends notifications to a pre-configured channel or user.
 type Service struct {
 	standard.Standard
 	config *Config
@@ -21,7 +21,7 @@ const (
 	topicMaxLength = 60    // characters
 )
 
-// Send a notification message to Zulip
+// Send a notification message to Zulip.
 func (service *Service) Send(message string, params *types.Params) error {
 	// Clone the config because we might modify stream and/or
 	// topic with values from the parameters and they should only
@@ -53,7 +53,7 @@ func (service *Service) Send(message string, params *types.Params) error {
 	return service.doSend(config, message)
 }
 
-// Initialize loads ServiceConfig from configURL and sets logger for this Service
+// Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 	service.config = &Config{}

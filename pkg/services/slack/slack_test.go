@@ -4,15 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strings"
-
-	"github.com/containrrr/shoutrrr/internal/testutils"
-	. "github.com/containrrr/shoutrrr/pkg/services/slack"
-	"github.com/jarcoal/httpmock"
-
 	"net/url"
 	"os"
+	"strings"
 	"testing"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
+	. "github.com/nicholas-fedor/shoutrrr/pkg/services/slack"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -21,6 +20,7 @@ import (
 
 func TestSlack(t *testing.T) {
 	gomegaformat.CharactersAroundMismatchToInclude = 20
+
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Shoutrrr Slack Suite")
 }
@@ -37,7 +37,6 @@ var (
 )
 
 var _ = Describe("the slack service", func() {
-
 	When("running integration tests", func() {
 		It("should not error out", func() {
 			if envSlackURL.String() == "" {
@@ -89,7 +88,6 @@ var _ = Describe("the slack service", func() {
 					Expect(err).NotTo(HaveOccurred(), "verifying")
 
 					Expect(config.GetURL().String()).To(Equal(newURL))
-
 				})
 			})
 		})
@@ -107,7 +105,6 @@ var _ = Describe("the slack service", func() {
 
 			outputURL := config.GetURL()
 			Expect(outputURL.String()).To(Equal(testURL))
-
 		})
 		When("generating a config object", func() {
 			It("should use the default botname if the argument list contains three strings", func() {
@@ -264,6 +261,7 @@ var _ = Describe("the slack service", func() {
 func tokenMust(rawToken string) *Token {
 	token, err := ParseToken(rawToken)
 	ExpectWithOffset(1, err).NotTo(HaveOccurred())
+
 	return token
 }
 

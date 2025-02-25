@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
-	"github.com/containrrr/shoutrrr/pkg/util/jsonclient"
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/util/jsonclient"
 )
 
-// Service providing Gotify as a notification service
+// Service providing Gotify as a notification service.
 type Service struct {
 	standard.Standard
 	config     *Config
@@ -23,7 +23,7 @@ type Service struct {
 	client     jsonclient.Client
 }
 
-// Initialize loads ServiceConfig from configURL and sets logger for this Service
+// Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 	service.config = &Config{
@@ -60,11 +60,13 @@ func isTokenValid(token string) bool {
 	} else if token[0] != 'A' {
 		return false
 	}
+
 	for _, c := range token {
 		if !strings.ContainsRune(tokenChars, c) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -73,18 +75,21 @@ func buildURL(config *Config) (string, error) {
 	if !isTokenValid(token) {
 		return "", fmt.Errorf("invalid gotify token %q", token)
 	}
+
 	scheme := "https"
 	if config.DisableTLS {
 		scheme = scheme[:4]
 	}
+
 	return fmt.Sprintf("%s://%s%s/message?token=%s", scheme, config.Host, config.Path, token), nil
 }
 
-// Send a notification message to Gotify
+// Send a notification message to Gotify.
 func (service *Service) Send(message string, params *types.Params) error {
 	if params == nil {
 		params = &types.Params{}
 	}
+
 	config := service.config
 	if err := service.pkr.UpdateConfigFromParams(config, params); err != nil {
 		service.Logf("Failed to update params: %v", err)
@@ -101,19 +106,21 @@ func (service *Service) Send(message string, params *types.Params) error {
 		Priority: config.Priority,
 	}
 	response := &messageResponse{}
+
 	err = service.client.Post(postURL, request, response)
 	if err != nil {
 		errorRes := &errorResponse{}
 		if service.client.ErrorResponse(err, errorRes) {
 			return errorRes
 		}
+
 		return fmt.Errorf("failed to send notification to Gotify: %s", err)
 	}
 
 	return nil
 }
 
-// GetHTTPClient is only supposed to be used for mocking the httpclient when testing
+// GetHTTPClient is only supposed to be used for mocking the httpclient when testing.
 func (service *Service) GetHTTPClient() *http.Client {
 	return service.httpClient
 }

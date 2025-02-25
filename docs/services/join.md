@@ -9,12 +9,12 @@
 
 ## Guide
 
-1.  Go to the [Join Webapp](https://joinjoaomgcd.appspot.com/) 
-2.  Select your device
-3.  Click **Join API** 
-4.  Your `deviceId` is shown in the top
-5.  Click **Show** next to `API Key` to see your key 
-6.  Your Shoutrrr URL will then be:
+1. Go to the [Join Webapp](https://joinjoaomgcd.appspot.com/)
+2. Select your device
+3. Click __Join API__
+4. Your `deviceId` is shown in the top
+5. Click __Show__ next to `API Key` to see your key
+6. Your Shoutrrr URL will then be:
     `join://shoutrrr:`__`api-key`__`@join/?devices=`__`deviceId`__
 
 !!! note ""

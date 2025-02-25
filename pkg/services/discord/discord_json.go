@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/containrrr/shoutrrr/pkg/types"
-	"github.com/containrrr/shoutrrr/pkg/util"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/util"
 )
 
-// WebhookPayload is the webhook endpoint payload
+// WebhookPayload is the webhook endpoint payload.
 type WebhookPayload struct {
 	Embeds    []embedItem `json:"embeds"`
 	Username  string      `json:"username,omitempty"`
 	AvatarURL string      `json:"avatar_url,omitempty"`
 }
 
-// JSON is the actual notification payload
+// JSON is the actual notification payload.
 type embedItem struct {
 	Title     string       `json:"title,omitempty"`
 	Content   string       `json:"description,omitempty"`
@@ -30,9 +30,8 @@ type embedFooter struct {
 	IconURL string `json:"icon_url,omitempty"`
 }
 
-// CreatePayloadFromItems creates a JSON payload to be sent to the discord webhook API
+// CreatePayloadFromItems creates a JSON payload to be sent to the discord webhook API.
 func CreatePayloadFromItems(items []types.MessageItem, title string, colors [types.MessageLevelCount]uint) (WebhookPayload, error) {
-
 	if len(items) < 1 {
 		return WebhookPayload{}, fmt.Errorf("message is empty")
 	}
@@ -42,7 +41,6 @@ func CreatePayloadFromItems(items []types.MessageItem, title string, colors [typ
 	embeds := make([]embedItem, 0, itemCount)
 
 	for _, item := range items {
-
 		color := uint(0)
 		if item.Level >= types.Unknown && int(item.Level) < len(colors) {
 			color = colors[item.Level]

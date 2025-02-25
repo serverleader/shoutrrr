@@ -7,22 +7,22 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/containrrr/shoutrrr/internal/meta"
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/util/jsonclient"
+	"github.com/nicholas-fedor/shoutrrr/internal/meta"
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/util/jsonclient"
 
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
-// Service sends notifications Ntfy
+// Service sends notifications Ntfy.
 type Service struct {
 	standard.Standard
 	config *Config
 	pkr    format.PropKeyResolver
 }
 
-// Send a notification message to Ntfy
+// Send a notification message to Ntfy.
 func (service *Service) Send(message string, params *types.Params) error {
 	config := service.config
 
@@ -37,7 +37,7 @@ func (service *Service) Send(message string, params *types.Params) error {
 	return nil
 }
 
-// Initialize loads ServiceConfig from configURL and sets logger for this Service
+// Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 	service.config = &Config{}
@@ -46,7 +46,6 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	_ = service.pkr.SetDefaultProps(service.config)
 
 	return service.config.setURL(&service.pkr, configURL)
-
 }
 
 func (service *Service) sendAPI(config *Config, message string) error {
@@ -71,6 +70,7 @@ func (service *Service) sendAPI(config *Config, message string) error {
 	if !config.Cache {
 		headers.Add("Cache", "no")
 	}
+
 	if !config.Firebase {
 		headers.Add("Firebase", "no")
 	}
@@ -80,6 +80,7 @@ func (service *Service) sendAPI(config *Config, message string) error {
 			// apiResponse implements Error
 			return &response
 		}
+
 		return err
 	}
 

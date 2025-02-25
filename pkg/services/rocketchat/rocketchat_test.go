@@ -5,30 +5,29 @@ import (
 	"os"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/internal/testutils"
-	"github.com/containrrr/shoutrrr/pkg/types"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
+	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/onsi/ginkgo/v2"
+	"github.com/onsi/gomega"
 )
 
 var (
 	service          *Service
 	envRocketchatURL *url.URL
-	_                = BeforeSuite(func() {
+	_                = ginkgo.BeforeSuite(func() {
 		service = &Service{}
 		envRocketchatURL, _ = url.Parse(os.Getenv("SHOUTRRR_ROCKETCHAT_URL"))
 	})
 )
 
 func TestRocketchat(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Shoutrrr Rocketchat Suite")
+	gomega.RegisterFailHandler(ginkgo.Fail)
+	ginkgo.RunSpecs(t, "Shoutrrr Rocketchat Suite")
 }
 
-var _ = Describe("the rocketchat service", func() {
-
-	When("running integration tests", func() {
-		It("should work without errors", func() {
+var _ = ginkgo.Describe("the rocketchat service", func() {
+	ginkgo.When("running integration tests", func() {
+		ginkgo.It("should work without errors", func() {
 			if envRocketchatURL.String() == "" {
 				return
 			}
@@ -38,153 +37,153 @@ var _ = Describe("the rocketchat service", func() {
 				"this is an integration test",
 				nil,
 			)
-			Expect(err).NotTo(HaveOccurred())
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
 	})
-	Describe("the rocketchat config", func() {
-		When("generating a config object", func() {
+	ginkgo.Describe("the rocketchat config", func() {
+		ginkgo.When("generating a config object", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://rocketchat.my-domain.com/tokenA/tokenB")
 			config := &Config{}
 			err := config.SetURL(rocketchatURL)
-			It("should not have caused an error", func() {
-				Expect(err).NotTo(HaveOccurred())
+			ginkgo.It("should not have caused an error", func() {
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
 			})
-			It("should set host", func() {
-				Expect(config.Host).To(Equal("rocketchat.my-domain.com"))
+			ginkgo.It("should set host", func() {
+				gomega.Expect(config.Host).To(gomega.Equal("rocketchat.my-domain.com"))
 			})
-			It("should set token A", func() {
-				Expect(config.TokenA).To(Equal("tokenA"))
+			ginkgo.It("should set token A", func() {
+				gomega.Expect(config.TokenA).To(gomega.Equal("tokenA"))
 			})
-			It("should set token B", func() {
-				Expect(config.TokenB).To(Equal("tokenB"))
+			ginkgo.It("should set token B", func() {
+				gomega.Expect(config.TokenB).To(gomega.Equal("tokenB"))
 			})
-			It("should not set channel or username", func() {
-				Expect(config.Channel).To(BeEmpty())
-				Expect(config.UserName).To(BeEmpty())
+			ginkgo.It("should not set channel or username", func() {
+				gomega.Expect(config.Channel).To(gomega.BeEmpty())
+				gomega.Expect(config.UserName).To(gomega.BeEmpty())
 			})
 		})
-		When("generating a new config with url, that has no token", func() {
+		ginkgo.When("generating a new config with url, that has no token", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://rocketchat.my-domain.com")
 			config := &Config{}
 			err := config.SetURL(rocketchatURL)
-			It("should return an error", func() {
-				Expect(err).To(HaveOccurred())
+			ginkgo.It("should return an error", func() {
+				gomega.Expect(err).To(gomega.HaveOccurred())
 			})
 		})
-		When("generating a config object with username only", func() {
+		ginkgo.When("generating a config object with username only", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://testUserName@rocketchat.my-domain.com/tokenA/tokenB")
 			config := &Config{}
 			err := config.SetURL(rocketchatURL)
-			It("should not have caused an error", func() {
-				Expect(err).NotTo(HaveOccurred())
+			ginkgo.It("should not have caused an error", func() {
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
 			})
-			It("should set username", func() {
-				Expect(config.UserName).To(Equal("testUserName"))
+			ginkgo.It("should set username", func() {
+				gomega.Expect(config.UserName).To(gomega.Equal("testUserName"))
 			})
-			It("should not set channel", func() {
-				Expect(config.Channel).To(BeEmpty())
+			ginkgo.It("should not set channel", func() {
+				gomega.Expect(config.Channel).To(gomega.BeEmpty())
 			})
 		})
-		When("generating a config object with channel only", func() {
+		ginkgo.When("generating a config object with channel only", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://rocketchat.my-domain.com/tokenA/tokenB/testChannel")
 			config := &Config{}
 			err := config.SetURL(rocketchatURL)
-			It("should not hav caused an error", func() {
-				Expect(err).NotTo(HaveOccurred())
+			ginkgo.It("should not hav caused an error", func() {
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
 			})
-			It("should set channel", func() {
-				Expect(config.Channel).To(Equal("#testChannel"))
+			ginkgo.It("should set channel", func() {
+				gomega.Expect(config.Channel).To(gomega.Equal("#testChannel"))
 			})
-			It("should not set username", func() {
-				Expect(config.UserName).To(BeEmpty())
+			ginkgo.It("should not set username", func() {
+				gomega.Expect(config.UserName).To(gomega.BeEmpty())
 			})
 		})
-		When("generating a config object with channel and userName", func() {
+		ginkgo.When("generating a config object with channel and userName", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://testUserName@rocketchat.my-domain.com/tokenA/tokenB/testChannel")
 			config := &Config{}
 			err := config.SetURL(rocketchatURL)
-			It("should not hav caused an error", func() {
-				Expect(err).NotTo(HaveOccurred())
+			ginkgo.It("should not hav caused an error", func() {
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
 			})
-			It("should set channel", func() {
-				Expect(config.Channel).To(Equal("#testChannel"))
+			ginkgo.It("should set channel", func() {
+				gomega.Expect(config.Channel).To(gomega.Equal("#testChannel"))
 			})
-			It("should set username", func() {
-				Expect(config.UserName).To(Equal("testUserName"))
+			ginkgo.It("should set username", func() {
+				gomega.Expect(config.UserName).To(gomega.Equal("testUserName"))
 			})
 		})
-		When("generating a config object with user and userName", func() {
+		ginkgo.When("generating a config object with user and userName", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://testUserName@rocketchat.my-domain.com/tokenA/tokenB/@user")
 			config := &Config{}
 			err := config.SetURL(rocketchatURL)
-			It("should not hav caused an error", func() {
-				Expect(err).NotTo(HaveOccurred())
+			ginkgo.It("should not hav caused an error", func() {
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
 			})
-			It("should set channel", func() {
-				Expect(config.Channel).To(Equal("@user"))
+			ginkgo.It("should set channel", func() {
+				gomega.Expect(config.Channel).To(gomega.Equal("@user"))
 			})
-			It("should set username", func() {
-				Expect(config.UserName).To(Equal("testUserName"))
+			ginkgo.It("should set username", func() {
+				gomega.Expect(config.UserName).To(gomega.Equal("testUserName"))
 			})
 		})
 	})
-	Describe("Sending messages", func() {
-		When("sending a message completely without parameters", func() {
+	ginkgo.Describe("Sending messages", func() {
+		ginkgo.When("sending a message completely without parameters", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://rocketchat.my-domain.com/tokenA/tokenB")
 			config := &Config{}
 			config.SetURL(rocketchatURL)
-			It("should generate the correct url to call", func() {
+			ginkgo.It("should generate the correct url to call", func() {
 				generatedURL := buildURL(config)
-				Expect(generatedURL).To(Equal("https://rocketchat.my-domain.com/hooks/tokenA/tokenB"))
+				gomega.Expect(generatedURL).To(gomega.Equal("https://rocketchat.my-domain.com/hooks/tokenA/tokenB"))
 			})
-			It("should generate the correct JSON body", func() {
+			ginkgo.It("should generate the correct JSON body", func() {
 				json, err := CreateJSONPayload(config, "this is a message", nil)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(string(json)).To(Equal("{\"text\":\"this is a message\"}"))
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
+				gomega.Expect(string(json)).To(gomega.Equal("{\"text\":\"this is a message\"}"))
 			})
 		})
-		When("sending a message with pre set username and channel", func() {
+		ginkgo.When("sending a message with pre set username and channel", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://testUserName@rocketchat.my-domain.com/tokenA/tokenB/testChannel")
 			config := &Config{}
 			config.SetURL(rocketchatURL)
-			It("should generate the correct JSON body", func() {
+			ginkgo.It("should generate the correct JSON body", func() {
 				json, err := CreateJSONPayload(config, "this is a message", nil)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(string(json)).To(Equal("{\"text\":\"this is a message\",\"username\":\"testUserName\",\"channel\":\"#testChannel\"}"))
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
+				gomega.Expect(string(json)).To(gomega.Equal("{\"text\":\"this is a message\",\"username\":\"testUserName\",\"channel\":\"#testChannel\"}"))
 			})
 		})
-		When("sending a message with pre set username and channel but overwriting them with parameters", func() {
+		ginkgo.When("sending a message with pre set username and channel but overwriting them with parameters", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://testUserName@rocketchat.my-domain.com/tokenA/tokenB/testChannel")
 			config := &Config{}
 			config.SetURL(rocketchatURL)
-			It("should generate the correct JSON body", func() {
+			ginkgo.It("should generate the correct JSON body", func() {
 				params := (*types.Params)(&map[string]string{"username": "overwriteUserName", "channel": "overwriteChannel"})
 				json, err := CreateJSONPayload(config, "this is a message", params)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(string(json)).To(Equal("{\"text\":\"this is a message\",\"username\":\"overwriteUserName\",\"channel\":\"overwriteChannel\"}"))
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
+				gomega.Expect(string(json)).To(gomega.Equal("{\"text\":\"this is a message\",\"username\":\"overwriteUserName\",\"channel\":\"overwriteChannel\"}"))
 			})
 		})
-		When("sending to an URL which contains HOST:PORT", func() {
+		ginkgo.When("sending to an URL which contains HOST:PORT", func() {
 			rocketchatURL, _ := url.Parse("rocketchat://testUserName@rocketchat.my-domain.com:5055/tokenA/tokenB/testChannel")
 			config := &Config{}
 			config.SetURL(rocketchatURL)
-			It("should generate a correct hook URL https://HOST:PORT", func() {
+			ginkgo.It("should generate a correct hook URL https://HOST:PORT", func() {
 				hookURL := buildURL(config)
-				Expect(hookURL).To(ContainSubstring("my-domain.com:5055"))
+				gomega.Expect(hookURL).To(gomega.ContainSubstring("my-domain.com:5055"))
 			})
 		})
-		When("sending to an URL with badly syntaxed #channel name", func() {
-			It("should properly parse the Channel", func() {
+		ginkgo.When("sending to an URL with badly syntaxed #channel name", func() {
+			ginkgo.It("should properly parse the Channel", func() {
 				rocketchatURL, _ := url.Parse("rocketchat://testUserName@rocketchat.my-domain.com:5055/tokenA/tokenB/###########################testChannel")
 				config := &Config{}
 				config.SetURL(rocketchatURL)
-				Expect(config.Channel).To(ContainSubstring("###########################testChannel"))
+				gomega.Expect(config.Channel).To(gomega.ContainSubstring("###########################testChannel"))
 			})
-			It("should properly parse the Channel", func() {
+			ginkgo.It("should properly parse the Channel", func() {
 				rocketchatURL, _ := url.Parse("rocketchat://testUserName@rocketchat.my-domain.com:5055/tokenA/tokenB/#testChannel")
 				config := &Config{}
 				config.SetURL(rocketchatURL)
-				Expect(config.Channel).To(ContainSubstring("#testChannel"))
+				gomega.Expect(config.Channel).To(gomega.ContainSubstring("#testChannel"))
 			})
 		})
 	})

@@ -4,7 +4,7 @@ import (
 	"net/url"
 )
 
-// Service is the public common interface for all notification services
+// Service is the public common interface for all notification services.
 type Service interface {
 	Sender
 	Templater

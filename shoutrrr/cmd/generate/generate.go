@@ -3,30 +3,34 @@ package generate
 import (
 	"errors"
 	"fmt"
-	"github.com/containrrr/shoutrrr/pkg/generators"
-	"github.com/containrrr/shoutrrr/pkg/router"
-	"github.com/containrrr/shoutrrr/pkg/types"
-	"github.com/fatih/color"
-	"github.com/spf13/cobra"
 	"os"
 	"strings"
+
+	"github.com/fatih/color"
+	"github.com/nicholas-fedor/shoutrrr/pkg/generators"
+	"github.com/nicholas-fedor/shoutrrr/pkg/router"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/spf13/cobra"
 )
+
+const MaximumNArgs = 2
 
 var serviceRouter router.ServiceRouter
 
-// Cmd is used to generate a notification service URL from user input
+// Cmd is used to generate a notification service URL from user input.
 var Cmd = &cobra.Command{
 	Use:    "generate",
 	Short:  "Generates a notification service URL from user input",
 	Run:    Run,
 	PreRun: loadArgsFromAltSources,
-	Args:   cobra.MaximumNArgs(2),
+	Args:   cobra.MaximumNArgs(MaximumNArgs),
 }
 
 func loadArgsFromAltSources(cmd *cobra.Command, args []string) {
 	if len(args) > 0 {
 		_ = cmd.Flags().Set("service", args[0])
 	}
+
 	if len(args) > 1 {
 		_ = cmd.Flags().Set("generator", args[1])
 	}
@@ -34,6 +38,7 @@ func loadArgsFromAltSources(cmd *cobra.Command, args []string) {
 
 func init() {
 	serviceRouter = router.ServiceRouter{}
+
 	Cmd.Flags().StringP("service", "s", "", "The notification service to generate a URL for")
 
 	Cmd.Flags().StringP("generator", "g", "basic", "The generator to use")
@@ -41,10 +46,10 @@ func init() {
 	Cmd.Flags().StringArrayP("property", "p", []string{}, "Configuration property in key=value format")
 }
 
-// Run the generate command
+// Run the generate command.
 func Run(cmd *cobra.Command, _ []string) {
-
 	var service types.Service
+
 	var err error
 
 	serviceSchema, _ := cmd.Flags().GetString("service")
@@ -52,12 +57,15 @@ func Run(cmd *cobra.Command, _ []string) {
 	propertyFlags, _ := cmd.Flags().GetStringArray("property")
 
 	props := make(map[string]string, len(propertyFlags))
+
 	for _, prop := range propertyFlags {
 		parts := strings.Split(prop, "=")
 		if len(parts) != 2 {
 			_, _ = fmt.Fprintln(color.Output, "Invalid property key/value pair:", color.HiYellowString(prop))
+
 			continue
 		}
+
 		props[parts[0]] = parts[1]
 	}
 
@@ -82,12 +90,13 @@ func Run(cmd *cobra.Command, _ []string) {
 		cmd.SetUsageTemplate(cmd.UsageTemplate() + "\nAvailable services: \n  " + serviceList + "\n")
 
 		_ = cmd.Usage()
+
 		os.Exit(1)
 	}
 
 	var generator types.Generator
 
-	var generatorFlag = cmd.Flags().Lookup("generator")
+	generatorFlag := cmd.Flags().Lookup("generator")
 
 	if !generatorFlag.Changed {
 		// try to use the service default generator if one exists
@@ -110,6 +119,7 @@ func Run(cmd *cobra.Command, _ []string) {
 		cmd.SetUsageTemplate(cmd.UsageTemplate() + "\nAvailable generators: \n  " + generatorList + "\n")
 
 		_ = cmd.Usage()
+
 		os.Exit(1)
 	}
 
@@ -117,7 +127,6 @@ func Run(cmd *cobra.Command, _ []string) {
 	_, _ = fmt.Fprintln(color.Output, " using", color.HiMagentaString(generatorName), "generator")
 
 	serviceConfig, err := generator.Generate(service, props, cmd.Flags().Args())
-
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
 		os.Exit(1)
@@ -125,5 +134,4 @@ func Run(cmd *cobra.Command, _ []string) {
 
 	fmt.Println()
 	fmt.Println("URL:", serviceConfig.GetURL().String())
-
 }

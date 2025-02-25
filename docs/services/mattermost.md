@@ -7,8 +7,6 @@
 
 --8<-- "docs/services/mattermost/config.md"
 
-
-
 ## Creating a Webhook in MatterMost
 
 1. Open up the Integrations page by clicking on *Integrations* within the menu
@@ -27,6 +25,7 @@
 ![Screenshot 5](mattermost/5.PNG)
 
 6. Format the service URL
+
 ```
 https://your-domain.com/hooks/bywsw8zt5jgpte3nm65qjiru6h
                               └────────────────────────┘
@@ -42,7 +41,7 @@ Mattermost provides functionality to post as another user or to another channel,
 <br/>
 To do this, you can add a *user* and/or *channel* to the service URL.
 
-```
+```console
 mattermost://shoutrrrUser@your-domain.com/bywsw8zt5jgpte3nm65qjiru6h/shoutrrrChannel
              └──────────┘                 └────────────────────────┘ └─────────────┘
                  user                               token                channel
@@ -56,11 +55,11 @@ The following example contains all parameters that are currently supported.
 
 ```gotemplate
 params := (*types.Params)(
-	&map[string]string{
-		"username": "overwriteUserName",
-		"channel": "overwriteChannel",
+ &map[string]string{
+  "username": "overwriteUserName",
+  "channel": "overwriteChannel",
         "icon": "overwriteIcon",
-	},
+ },
 )
 
 service.Send("this is a message", params)

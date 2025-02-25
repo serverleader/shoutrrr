@@ -1,6 +1,6 @@
 package types
 
-// QueuedSender is the interface for a proxied sender that queues messages before sending
+// QueuedSender is the interface for a proxied sender that queues messages before sending.
 type QueuedSender interface {
 	Enqueuef(format string, v ...interface{})
 	Enqueue(message string)
