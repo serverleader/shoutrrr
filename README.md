@@ -16,6 +16,7 @@ Heavily inspired by <a href="https://github.com/caronc/apprise">caronc/apprise</
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/nicholas-fedor/shoutrrr)
 [![github code size in bytes](https://img.shields.io/github/languages/code-size/nicholas-fedor/shoutrrr.svg?style=flat-square)](https://github.com/nicholas-fedor/shoutrrr)
 [![license](https://img.shields.io/github/license/nicholas-fedor/shoutrrr.svg?style=flat-square)](https://github.com/nicholas-fedor/shoutrrr/blob/main/LICENSE)
+[![Pulls from DockerHub](https://img.shields.io/docker/pulls/nickfedor/shoutrrr.svg)](https://hub.docker.com/r/nickfedor/shoutrrr)
 [![godoc](https://godoc.org/github.com/nicholas-fedor/shoutrrr?status.svg)](https://godoc.org/github.com/nicholas-fedor/shoutrrr) <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
