@@ -5,7 +5,6 @@
 Using shoutrrr is easy! There is currently two ways of using it as a package.
 
 ### Using the direct send command
-
 Easiest to use, but very limited.
 
 ```go
@@ -14,7 +13,6 @@ err := shoutrrr.Send(url, "Hello world (or slack channel) !")
 ```
 
 ### Using a sender
-
 Using a sender gives you the ability to preconfigure multiple notification services and send to all of them with the same `Send(message, params)` method.
 
 ```go
@@ -34,12 +32,12 @@ func doWork() error {
     
     // Maybe get creative...?
     defer func(start time.Time) { 
-     sender.Enqueue("Elapsed: %v", time.Now().Sub(start)) 
+    	sender.Enqueue("Elapsed: %v", time.Now().Sub(start)) 
     }(time.Now())
     
     if err := doMoreWork(); err != nil {
         sender.Enqueue("Oh no! %v", err)
-     
+    	
         // This will send the currently queued up messages...
         return
     }   
@@ -50,6 +48,7 @@ func doWork() error {
 }
 
 ```
+
 
 ## Through the CLI
 
@@ -97,7 +96,7 @@ $ shoutrrr verify \
 Generate and display the configuration for a notification service url.
 
 ```bash
-shoutrrr generate [OPTIONS] <SERVICE>
+$ shoutrrr generate [OPTIONS] <SERVICE>
 ```
 
 | Flags                        | Description                                     |

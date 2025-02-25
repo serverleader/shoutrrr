@@ -5,10 +5,11 @@
     Using the old format (`slack://xxxx/yyyy/zzzz`) will still work as before and will automatically be upgraded to
     the new format when used.
 
-The Slack notification service uses either [Slack Webhooks](https://api.slack.com/messaging/webhooks) or the
+The Slack notification service uses either [Slack Webhooks](https://api.slack.com/messaging/webhooks) or the 
 [Bot API](https://api.slack.com/methods/chat.postMessage) to send messages.  
 
 See the [guides](../guides/slack/index.md) for information on how to get your *token* and *channel*.
+
 
 ## URL Format
 
@@ -28,7 +29,7 @@ See the [guides](../guides/slack/index.md) for information on how to get your *t
     ```uri
     slack://xoxb:123456789012-1234567890123-4mt0t4l1YL3g1T5L4cK70k3N@C001CH4NN3L?color=good&title=Great+News&icon=man-scientist&botname=Shoutrrrbot
     ```
-
+    
 !!! example "Webhook"
     ```uri
     slack://hook:WNA3PBYV6-F20DUQND3RQ-Webc4MAvoacrpPakR8phF0zi@webhook?color=good&title=Great+News&icon=man-scientist&botname=Shoutrrrbot

@@ -7,7 +7,7 @@
 ## Examples
 
 !!! example "Common usage"
-
+    
     ```uri
     gotify://gotify.example.com:443/AzyoeNS.D4iJLVa/?title=Great+News&priority=1
     ```

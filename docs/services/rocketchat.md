@@ -3,7 +3,7 @@
 ## URL Format
 
 !!! info ""
-    rocketchat://[__`username`__@]__`rocketchat-host`__/__`token`__[/__`channel`&#124;`@recipient`__]*
+    rocketchat://[__`username`__@]__`rocketchat-host`__/__`token`__[/__`channel`&#124;`@recipient`__]* 
 
 --8<-- "docs/services/rocketchat/config.md"
 
@@ -15,15 +15,14 @@
 2. Open *Integrations* and then click *New*
 ![Screenshot 2](rocketchat/2.png)
 
-3. Fill in the information for the webhook and click *Save*. Please don't forget to Enable your integration.
+3. Fill in the information for the webhook and click *Save*. Please don't forget to Enable your integration. 
 ![Screenshot 3](rocketchat/3.png)
 
 5. If you did everything correctly, Rocket.chat will give you the *URL* and *Token* to your newly created webhook.
 ![Screenshot 4](rocketchat/4.png)
 
 6. Format the service URL
-
-```console
+```
 rocketchat://your-domain.com/8eGdRzc9r4YYNyvge/2XYQcX9NBwJBKfQnphpebPcnXZcPEi32Nt4NKJfrnbhsbRfX
                              └────────────────────────────────────────────────────────────────┘
                                                            token
@@ -35,7 +34,7 @@ Rocket.chat provides functionality to post as another user or to another channel
 <br/>
 To do this, you can add a *sender* and/or *channel* / *receiver* to the service URL.
 
-```console
+```
 rocketchat://shoutrrrUser@your-domain.com/8eGdRzc9r4YYNyvge/2XYQcX9NBwJBKfQnphpebPcnXZcPEi32Nt4NKJfrnbhsbRfX/shoutrrrChannel
              └──────────┘                 └────────────────────────────────────────────────────────────────┘ └─────────────┘
                 sender                                                   token                                   channel
@@ -53,10 +52,10 @@ The following example contains all parameters that are currently supported.
 
 ```gotemplate
 params := (*types.Params)(
- &map[string]string{
-  "username": "overwriteUserName",
-  "channel": "overwriteChannel",
- },
+	&map[string]string{
+		"username": "overwriteUserName",
+		"channel": "overwriteChannel",
+	},
 )
 
 service.Send("this is a message", params)

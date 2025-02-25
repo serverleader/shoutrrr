@@ -26,7 +26,7 @@ If `rooms` are *not* specified, the service will send the message to all the roo
 Otherwise, the service will only send the message to the specified rooms. If the user is *not* in any of those rooms,
 but have been invited to it, it will automatically accept that invite.
 
-__Note__: The service will __not__ join any rooms unless they are explicitly specified in `rooms`. If you need the user
+**Note**: The service will **not** join any rooms unless they are explicitly specified in `rooms`. If you need the user
 to join those rooms, you can send a notification with `rooms` explicitly set once.
 
 ### Room Lookup
@@ -35,7 +35,7 @@ Rooms specified in `rooms` will be treated as room IDs if the start with a `!` a
 they have no such prefix (or use a *correctly escaped* `#`) they will instead be treated as aliases, and a directory
 lookup will be used to resolve their corresponding IDs.
 
-__Note__: Don't use unescaped `#` for the channel aliases as that will be treated as the `fragment` part of the URL.
+**Note**: Don't use unescaped `#` for the channel aliases as that will be treated as the `fragment` part of the URL.
 Either omit them or URL encode them, I.E. `rooms=%23alias:server` or `rooms=alias:server`
 
 ### TLS

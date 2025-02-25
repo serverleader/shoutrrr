@@ -4,7 +4,7 @@
 
 !!! info ""
     pushover://shoutrrr:__`apiToken`__@__`userKey`__/?devices=__`device1`__[,__`device2`__, ...]
-
+    
 --8<-- "docs/services/pushover/config.md"
 
 ## Getting the keys from Pushover
@@ -24,7 +24,7 @@ The __`apiToken`__ is displayed at the top of the application page.
 ## Optional parameters
 
 You can optionally specify the __`title`__ and __`priority`__ parameters in the URL:  
-_pushover://shoutrrr:__`token`__@__`userKey`__/?devices=__`device`__&title=Custom+Title&priority=1_
+*pushover://shoutrrr:__`token`__@__`userKey`__/?devices=__`device`__&title=Custom+Title&priority=1*
 
 !!! note
     Only supply priority values between -1 and 1, since 2 requires additional parameters that are not supported yet.
