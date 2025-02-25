@@ -30,8 +30,8 @@ func (s *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 		return err
 	}
 
-	s.client = newClient(s.Config.Host, s.Config.DisableTLS, logger)
 	if configURL.String() != "matrix://dummy@dummy.com" {
+		s.client = newClient(s.Config.Host, s.Config.DisableTLS, logger)
 		if s.Config.User != "" {
 			return s.client.login(s.Config.User, s.Config.Password)
 		}
@@ -47,6 +47,10 @@ func (s *Service) Send(message string, params *types.Params) error {
 	config := *s.Config
 	if err := s.pkr.UpdateConfigFromParams(&config, params); err != nil {
 		return err
+	}
+
+	if s.client == nil {
+		return fmt.Errorf("client not initialized; cannot send message")
 	}
 
 	errors := s.client.sendMessage(message, s.Config.Rooms)
