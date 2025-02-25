@@ -23,7 +23,7 @@ jobs:
         uses: golangci/golangci-lint-action@456fc0f7358ebf6cdd48ca0d2d56e88a6c7aa077
         with:
           version: v1.64.5
-          args: --timeout=5m
+          args: --timeout=5m --config= # Use default linter settings
 
       - name: Format Go code
         run: |
