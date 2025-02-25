@@ -63,7 +63,7 @@ var _ = ginkgo.Describe("the bark service", func() {
 				serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 				gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 
-				gomega.Expect(*service.config).To(gomega.Equal(Config{
+				gomega.Expect(*service.Config).To(gomega.Equal(Config{ // Changed from service.config
 					Host:      "hostname",
 					DeviceKey: "devicekey",
 					Scheme:    "https",
@@ -93,7 +93,7 @@ var _ = ginkgo.Describe("the bark service", func() {
 			serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 
-			httpmock.RegisterResponder("POST", service.config.GetAPIURL("push"), testutils.JSONRespondMust(200, apiResponse{
+			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"), testutils.JSONRespondMust(200, apiResponse{ // Changed from service.config
 				Code:    http.StatusOK,
 				Message: "OK",
 			}))
@@ -104,7 +104,7 @@ var _ = ginkgo.Describe("the bark service", func() {
 			serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 
-			httpmock.RegisterResponder("POST", service.config.GetAPIURL("push"), testutils.JSONRespondMust(500, apiResponse{
+			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"), testutils.JSONRespondMust(500, apiResponse{ // Changed from service.config
 				Code:    500,
 				Message: "someone turned off the internet",
 			}))
@@ -115,7 +115,7 @@ var _ = ginkgo.Describe("the bark service", func() {
 			serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 
-			httpmock.RegisterResponder("POST", service.config.GetAPIURL("push"), testutils.JSONRespondMust(200, apiResponse{
+			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"), testutils.JSONRespondMust(200, apiResponse{ // Changed from service.config
 				Code:    500,
 				Message: "For some reason, the response code and HTTP code is different?",
 			}))

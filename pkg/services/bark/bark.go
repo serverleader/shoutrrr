@@ -6,22 +6,21 @@ import (
 	"net/url"
 
 	"github.com/nicholas-fedor/shoutrrr/pkg/format"
-	"github.com/nicholas-fedor/shoutrrr/pkg/util/jsonclient"
-
 	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/util/jsonclient"
 )
 
-// Service sends notifications Bark.
+// Service sends notifications to Bark.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config // Changed from 'config' to 'Config'
 	pkr    format.PropKeyResolver
 }
 
 // Send a notification message to Bark.
 func (service *Service) Send(message string, params *types.Params) error {
-	config := service.config
+	config := service.Config // Update reference
 
 	if err := service.pkr.UpdateConfigFromParams(config, params); err != nil {
 		return err
@@ -37,12 +36,12 @@ func (service *Service) Send(message string, params *types.Params) error {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.Config = &Config{}                              // Update reference
+	service.pkr = format.NewPropKeyResolver(service.Config) // Update reference
 
-	_ = service.pkr.SetDefaultProps(service.config)
+	_ = service.pkr.SetDefaultProps(service.Config) // Update reference
 
-	return service.config.setURL(&service.pkr, configURL)
+	return service.Config.setURL(&service.pkr, configURL) // Update reference
 }
 
 func (service *Service) sendAPI(config *Config, message string) error {
