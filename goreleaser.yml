@@ -1,7 +1,8 @@
 version: 2
+
 builds:
   - main: ./shoutrrr/main.go
-    binary: shoutrrr
+    binary: shoutrrr/shoutrrr
     goos:
       - linux
       - windows
@@ -14,7 +15,8 @@ builds:
       - -s -w -X github.com/nicholas-fedor/shoutrrr/internal/meta.Version={{ .Version }}
 
 archives:
-  - name_template: >-
+  - id: default # Unique ID for this archive configuration
+    name_template: >-
       {{- .ProjectName }}_
       {{- if eq .Os "darwin" }}macOS
       {{- else }}{{ .Os }}{{ end }}_
@@ -24,12 +26,26 @@ archives:
       {{- else if eq .Arch "arm64" }}arm64v8
       {{- else }}{{ .Arch }}{{ end }}_
       {{- .Version -}}
-    format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
     files:
       - LICENSE.md
+    builds:
+      - shoutrrr
+    formats: ["tar.gz"]
+  - id: windows
+    name_template: >-
+      {{- .ProjectName }}_
+      {{- .Os }}_
+      {{- if eq .Arch "amd64" }}amd64
+      {{- else if eq .Arch "386" }}i386
+      {{- else if eq .Arch "arm" }}armhf
+      {{- else if eq .Arch "arm64" }}arm64v8
+      {{- else }}{{ .Arch }}{{ end }}_
+      {{- .Version -}}
+    files:
+      - LICENSE.md
+    builds:
+      - shoutrrr
+    formats: ["zip"]
 
 dockers:
   - use: buildx
