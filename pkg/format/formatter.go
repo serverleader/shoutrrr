@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"unsafe"
 
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 	"github.com/nicholas-fedor/shoutrrr/pkg/util"
@@ -15,10 +14,13 @@ import (
 // GetServiceConfig returns the inner config of a service.
 func GetServiceConfig(service types.Service) types.ServiceConfig {
 	serviceValue := reflect.Indirect(reflect.ValueOf(service))
-	configField, _ := serviceValue.Type().FieldByName("config")
-	configRef := serviceValue.FieldByIndex(configField.Index)
 
-	var ourRef reflect.Value
+	configField, ok := serviceValue.Type().FieldByName("Config")
+	if !ok {
+		panic("service does not have a Config field") // Or handle gracefully
+	}
+
+	configRef := serviceValue.FieldByIndex(configField.Index)
 
 	if configRef.IsNil() {
 		configType := configField.Type
@@ -26,13 +28,10 @@ func GetServiceConfig(service types.Service) types.ServiceConfig {
 			configType = configType.Elem()
 		}
 
-		ourRef = reflect.New(configType)
-	} else {
-		ourRef = reflect.NewAt(configRef.Type(), unsafe.Pointer(configRef.UnsafeAddr())).Elem()
+		return reflect.New(configType).Interface().(types.ServiceConfig)
 	}
 
-	//
-	return ourRef.Interface().(types.ServiceConfig)
+	return configRef.Interface().(types.ServiceConfig)
 }
 
 // ColorFormatTree returns a color highlighted string representation of a node tree.
