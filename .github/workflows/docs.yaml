@@ -2,10 +2,6 @@ name: Publish Docs
 
 on:
   workflow_dispatch: {}
-  workflow_run:
-    workflows: ["Release (Production)"]
-    types:
-      - completed
 
 permissions:
   contents: write
@@ -14,9 +10,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: >-
-      ${{ contains(fromJSON(github.event.workflow_run.jobs), 'build') && 
-          fromJSON(github.event.workflow_run.jobs).build.conclusion == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
