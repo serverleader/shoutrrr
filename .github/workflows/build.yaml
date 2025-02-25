@@ -63,4 +63,4 @@ jobs:
         uses: actions/attest-build-provenance@v2
         if: success()
         with:
-          subject-path: "dist/*.tar.gz dist/*.zip"
+          subject-path: "dist/**/*"
