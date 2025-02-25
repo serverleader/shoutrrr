@@ -9,10 +9,9 @@ import (
 
 	"github.com/nicholas-fedor/shoutrrr/internal/meta"
 	"github.com/nicholas-fedor/shoutrrr/pkg/format"
-	"github.com/nicholas-fedor/shoutrrr/pkg/util/jsonclient"
-
 	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/util/jsonclient"
 )
 
 // Service sends notifications Ntfy.

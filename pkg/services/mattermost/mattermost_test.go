@@ -62,10 +62,10 @@ var _ = ginkgo.Describe("the mattermost service", func() {
 			})
 		})
 		ginkgo.When("generating a new config with url, that has no token", func() {
-			mattermostURL, _ := url.Parse("mattermost://mattermost.my-domain.com")
-			config := &Config{}
-			err := config.SetURL(mattermostURL)
 			ginkgo.It("should return an error", func() {
+				mattermostURL, _ := url.Parse("mattermost://mattermost.my-domain.com")
+				config := &Config{}
+				err := config.SetURL(mattermostURL)
 				gomega.Expect(err).To(gomega.HaveOccurred())
 			})
 		})

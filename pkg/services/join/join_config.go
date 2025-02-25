@@ -56,11 +56,12 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 		}
 	}
 
-	if len(config.Devices) < 1 {
+	query := url.Query()
+	if query.Has("devices") && len(config.Devices) < 1 {
 		return errors.New(string(DevicesMissing))
 	}
 
-	if len(config.APIKey) < 1 {
+	if url.User != nil && len(config.APIKey) < 1 {
 		return errors.New(string(APIKeyMissing))
 	}
 

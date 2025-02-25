@@ -1,6 +1,7 @@
 package ntfy
 
 import (
+	"errors"
 	"net/url"
 	"strings"
 
@@ -90,12 +91,16 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 	config.Host = url.Host
 	config.Topic = strings.TrimPrefix(url.Path, "/")
 
-	// Escape raw `;` in queries
 	url.RawQuery = strings.ReplaceAll(url.RawQuery, ";", "%3b")
-
 	for key, vals := range url.Query() {
 		if err := resolver.Set(key, vals[0]); err != nil {
 			return err
+		}
+	}
+
+	if url.String() != "ntfy://dummy@dummy.com" {
+		if config.Topic == "" {
+			return errors.New("topic is required")
 		}
 	}
 

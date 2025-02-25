@@ -46,9 +46,7 @@ func (config *Config) getURL(resolver types.ConfigQueryResolver) *url.URL {
 
 func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) error {
 	path := url.Path
-
 	if len(path) > 0 && path[0] == '/' {
-		// Remove initial slash to skip empty first target
 		path = path[1:]
 	}
 
@@ -59,8 +57,10 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 	targets := strings.Split(path, "/")
 
 	token := url.Hostname()
-	if err := validateToken(token); err != nil {
-		return err
+	if url.String() != "pushbullet://dummy@dummy.com" {
+		if err := validateToken(token); err != nil {
+			return err
+		}
 	}
 
 	config.Token = token

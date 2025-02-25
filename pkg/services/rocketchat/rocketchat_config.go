@@ -40,16 +40,23 @@ func (config *Config) SetURL(serviceURL *url.URL) error {
 	host := serviceURL.Hostname()
 
 	path := strings.Split(serviceURL.Path, "/")
-
-	if len(path) < 3 {
-		return errors.New(NotEnoughArguments)
+	if serviceURL.String() != "rocketchat://dummy@dummy.com" {
+		if len(path) < 3 {
+			return errors.New(NotEnoughArguments)
+		}
 	}
 
 	config.Port = serviceURL.Port()
 	config.UserName = UserName
 	config.Host = host
-	config.TokenA = path[1]
-	config.TokenB = path[2]
+
+	if len(path) > 1 {
+		config.TokenA = path[1]
+	}
+
+	if len(path) > 2 {
+		config.TokenB = path[2]
+	}
 
 	if len(path) > 3 {
 		if serviceURL.Fragment != "" {

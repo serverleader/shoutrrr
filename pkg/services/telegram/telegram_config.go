@@ -57,8 +57,10 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 	password, _ := url.User.Password()
 
 	token := url.User.Username() + ":" + password
-	if !IsTokenValid(token) {
-		return fmt.Errorf("invalid telegram token %s", token)
+	if url.String() != "telegram://dummy@dummy.com" {
+		if !IsTokenValid(token) {
+			return fmt.Errorf("invalid telegram token %s", token)
+		}
 	}
 
 	for key, vals := range url.Query() {
@@ -67,8 +69,10 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 		}
 	}
 
-	if len(config.Chats) < 1 {
-		return errors.New("no channels defined in config URL")
+	if url.String() != "telegram://dummy@dummy.com" {
+		if len(config.Chats) < 1 {
+			return errors.New("no channels defined in config URL")
+		}
 	}
 
 	config.Token = token

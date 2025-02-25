@@ -7,10 +7,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/jarcoal/httpmock"
 	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
 	"github.com/nicholas-fedor/shoutrrr/pkg/format"
-
-	"github.com/jarcoal/httpmock"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
 	gomegaformat "github.com/onsi/gomega/format"
@@ -40,7 +39,6 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 
 				return
 			}
-
 			configURL := testutils.URLMust(envBarkURL.String())
 			gomega.Expect(service.Initialize(configURL, logger)).To(gomega.Succeed())
 			gomega.Expect(service.Send("This is an integration test message", nil)).To(gomega.Succeed())
@@ -61,7 +59,6 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 			ginkgo.It("should set the optional fields to the defaults", func() {
 				serviceURL := testutils.URLMust("ntfy://hostname/topic")
 				gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
-
 				gomega.Expect(*service.Config).To(gomega.Equal(Config{
 					Host:     "hostname",
 					Topic:    "topic",
@@ -94,30 +91,28 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 		})
 
 		ginkgo.It("should not report an error if the server accepts the payload", func() {
-			serviceURL := testutils.URLMust("ntfy://:devicekey@hostname")
+			serviceURL := testutils.URLMust("ntfy://:devicekey@hostname/testtopic")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
-
 			httpmock.RegisterResponder("POST", service.Config.GetAPIURL(), testutils.JSONRespondMust(200, apiResponse{
 				Code:    http.StatusOK,
 				Message: "OK",
 			}))
-
 			gomega.Expect(service.Send("Message", nil)).To(gomega.Succeed())
 		})
-		ginkgo.It("should not panic if a server error occurs", func() {
-			serviceURL := testutils.URLMust("ntfy://:devicekey@hostname")
-			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 
+		ginkgo.It("should not panic if a server error occurs", func() {
+			serviceURL := testutils.URLMust("ntfy://:devicekey@hostname/testtopic")
+			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 			httpmock.RegisterResponder("POST", service.Config.GetAPIURL(), testutils.JSONRespondMust(500, apiResponse{
 				Code:    500,
 				Message: "someone turned off the internet",
 			}))
-
 			gomega.Expect(service.Send("Message", nil)).To(gomega.HaveOccurred())
 		})
+
 		ginkgo.It("should not panic if a communication error occurs", func() {
 			httpmock.DeactivateAndReset()
-			serviceURL := testutils.URLMust("ntfy://:devicekey@nonresolvablehostname")
+			serviceURL := testutils.URLMust("ntfy://:devicekey@nonresolvablehostname/testtopic")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 			gomega.Expect(service.Send("Message", nil)).To(gomega.HaveOccurred())
 		})
@@ -128,9 +123,7 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 			ginkgo.It("should implement basic service config API methods correctly", func() {
 				testutils.TestConfigGetInvalidQueryValue(&Config{})
 				testutils.TestConfigSetInvalidQueryValue(&Config{}, "ntfy://host/topic?foo=bar")
-
 				testutils.TestConfigSetDefaultValues(&Config{})
-
 				testutils.TestConfigGetEnumsCount(&Config{}, 1)
 				testutils.TestConfigGetFieldsCount(&Config{}, 15)
 			})
@@ -143,7 +136,7 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 				httpmock.DeactivateAndReset()
 			})
 			ginkgo.It("should implement basic service API methods correctly", func() {
-				serviceURL := testutils.URLMust("ntfy://:devicekey@hostname")
+				serviceURL := testutils.URLMust("ntfy://:devicekey@hostname/testtopic")
 				gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 				testutils.TestServiceSetInvalidParamValue(service, "foo", "bar")
 			})

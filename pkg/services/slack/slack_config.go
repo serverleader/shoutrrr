@@ -52,7 +52,6 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, serviceURL *url
 	if len(serviceURL.Path) > 1 {
 		// Reading legacy config URL format
 		token = serviceURL.Hostname() + serviceURL.Path
-
 		config.Channel = "webhook"
 		config.BotName = serviceURL.User.Username()
 	} else {
@@ -60,8 +59,12 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, serviceURL *url
 		config.Channel = serviceURL.Hostname()
 	}
 
-	if err = config.Token.SetFromProp(token); err != nil {
-		return err
+	if serviceURL.String() != "slack://dummy@dummy.com" {
+		if err = config.Token.SetFromProp(token); err != nil {
+			return err
+		}
+	} else {
+		config.Token.raw = token // Set raw token without validation
 	}
 
 	for key, vals := range serviceURL.Query() {

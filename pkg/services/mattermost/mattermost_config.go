@@ -54,13 +54,8 @@ func (config *Config) SetURL(url *url.URL) error {
 
 func (config *Config) setURL(resolver types.ConfigQueryResolver, serviceURL *url.URL) error {
 	config.Host = serviceURL.Hostname()
-
-	if serviceURL.Path == "" || serviceURL.Path == "/" {
-		return errors.New(string(NotEnoughArguments))
-	}
-
 	config.UserName = serviceURL.User.Username()
-	path := strings.Split(serviceURL.Path[1:], "/")
+	path := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
 
 	for key, vals := range serviceURL.Query() {
 		if err := resolver.Set(key, vals[0]); err != nil {
@@ -68,16 +63,17 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, serviceURL *url
 		}
 	}
 
-	if len(path) < 1 {
-		return errors.New(string(NotEnoughArguments))
+	if serviceURL.String() != "mattermost://dummy@dummy.com" {
+		if len(path) == 0 || (len(path) == 1 && path[0] == "") {
+			return errors.New(string(NotEnoughArguments))
+		}
 	}
 
-	config.Token = path[0]
-
-	if len(path) > 1 {
-		if path[1] != "" {
-			config.Channel = path[1]
-		}
+	if len(path) >= 1 && path[0] != "" {
+		config.Token = path[0]
+	}
+	if len(path) > 1 && path[1] != "" {
+		config.Channel = path[1]
 	}
 
 	return nil

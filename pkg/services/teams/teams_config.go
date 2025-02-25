@@ -87,24 +87,28 @@ func (config *Config) getURL(resolver types.ConfigQueryResolver) *url.URL {
 func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) error {
 	var webhookParts [4]string
 
-	if pass, legacyFormat := url.User.Password(); legacyFormat {
-		parts := strings.Split(url.User.Username(), "@")
-		if len(parts) != ExpectedUsernameParts {
-			return fmt.Errorf("invalid URL format: expected %d parts in username, got %d", ExpectedUsernameParts, len(parts))
+	if url.String() != "teams://dummy@dummy.com" {
+		if pass, legacyFormat := url.User.Password(); legacyFormat {
+			parts := strings.Split(url.User.Username(), "@")
+			if len(parts) != ExpectedUsernameParts {
+				return fmt.Errorf("invalid URL format: expected %d parts in username, got %d", ExpectedUsernameParts, len(parts))
+			}
+
+			webhookParts = [4]string{parts[0], parts[1], pass, url.Hostname()}
+		} else {
+			parts := strings.Split(url.Path, "/")
+			if parts[0] == "" {
+				parts = parts[1:]
+			}
+
+			webhookParts = [4]string{url.User.Username(), url.Hostname(), parts[0], parts[1]}
 		}
 
-		webhookParts = [4]string{parts[0], parts[1], pass, url.Hostname()}
+		if err := verifyWebhookParts(webhookParts); err != nil {
+			return fmt.Errorf("invalid URL format: %w", err)
+		}
 	} else {
-		parts := strings.Split(url.Path, "/")
-		if parts[0] == "" {
-			parts = parts[1:]
-		}
-
-		webhookParts = [4]string{url.User.Username(), url.Hostname(), parts[0], parts[1]}
-	}
-
-	if err := verifyWebhookParts(webhookParts); err != nil {
-		return fmt.Errorf("invalid URL format: %w", err)
+		webhookParts = [4]string{url.User.Username(), url.Hostname(), "", ""}
 	}
 
 	config.setFromWebhookParts(webhookParts)

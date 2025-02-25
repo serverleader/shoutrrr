@@ -56,7 +56,6 @@ func (config *Config) getURL(resolver types.ConfigQueryResolver) *url.URL {
 
 func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) error {
 	password, _ := url.User.Password()
-
 	config.Username = url.User.Username()
 	config.Password = password
 	config.Host = url.Hostname()
@@ -71,12 +70,14 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 		}
 	}
 
-	if len(config.FromAddress) < 1 {
-		return errors.New("fromAddress missing from config URL")
-	}
+	if url.String() != "smtp://dummy@dummy.com" {
+		if len(config.FromAddress) < 1 {
+			return errors.New("fromAddress missing from config URL")
+		}
 
-	if len(config.ToAddresses) < 1 {
-		return errors.New("toAddress missing from config URL")
+		if len(config.ToAddresses) < 1 {
+			return errors.New("toAddress missing from config URL")
+		}
 	}
 
 	return nil

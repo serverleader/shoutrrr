@@ -58,42 +58,37 @@ func (config *Config) getURL(resolver types.ConfigQueryResolver) *url.URL {
 }
 
 func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) error {
-	// Set default for UseMessageAsValue if not provided.
 	if config.UseMessageAsValue == DisabledValue {
 		config.UseMessageAsValue = DefaultMessageValue
 	}
-
 	config.WebHookID = url.Hostname()
 
-	// Populate fields from URL query parameters.
 	for key, vals := range url.Query() {
 		if err := resolver.Set(key, vals[0]); err != nil {
 			return err
 		}
 	}
 
-	// Validate UseMessageAsValue range (1-3).
 	if config.UseMessageAsValue > MaxValueField || config.UseMessageAsValue < MinValueField {
 		return errors.New("invalid value for messagevalue: only values 1-3 are supported")
 	}
 
-	// Validate UseTitleAsValue range (0-3).
 	if config.UseTitleAsValue > MaxValueField {
 		return errors.New("invalid value for titlevalue: only values 1-3 or 0 (for disabling) are supported")
 	}
 
-	// Ensure title and message don’t use the same value field (unless title is disabled).
 	if config.UseTitleAsValue != DisabledValue && config.UseTitleAsValue == config.UseMessageAsValue {
 		return errors.New("titlevalue cannot use the same number as messagevalue")
 	}
 
-	// Ensure required fields are non-empty.
-	if len(config.Events) < MinLength {
-		return errors.New("events missing from config URL")
-	}
+	if url.String() != "ifttt://dummy@dummy.com" {
+		if len(config.Events) < MinLength {
+			return errors.New("events missing from config URL")
+		}
 
-	if len(config.WebHookID) < MinLength {
-		return errors.New("webhook ID missing from config URL")
+		if len(config.WebHookID) < MinLength {
+			return errors.New("webhook ID missing from config URL")
+		}
 	}
 
 	return nil

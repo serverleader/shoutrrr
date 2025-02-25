@@ -9,7 +9,6 @@ import (
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
-// Config for use within the Google Chat plugin.
 type Config struct {
 	standard.EnumlessConfig
 	Host  string `default:"chat.googleapis.com"`
@@ -18,21 +17,18 @@ type Config struct {
 	Key   string
 }
 
-// GetURL returns a URL representation of it's current field values.
 func (config *Config) GetURL() *url.URL {
 	resolver := format.NewPropKeyResolver(config)
 
 	return config.getURL(&resolver)
 }
 
-// SetURL updates a ServiceConfig from a URL representation of it's field values.
 func (config *Config) SetURL(url *url.URL) error {
 	resolver := format.NewPropKeyResolver(config)
 
 	return config.setURL(&resolver, url)
 }
 
-// SetURL updates a ServiceConfig from a URL representation of it's field values.
 func (config *Config) setURL(_ types.ConfigQueryResolver, serviceURL *url.URL) error {
 	config.Host = serviceURL.Host
 	config.Path = serviceURL.Path
@@ -41,11 +37,12 @@ func (config *Config) setURL(_ types.ConfigQueryResolver, serviceURL *url.URL) e
 	config.Key = query.Get("key")
 	config.Token = query.Get("token")
 
-	if config.Key == "" {
+	// Only enforce if explicitly provided but empty
+	if query.Has("key") && config.Key == "" {
 		return errors.New("missing field 'key'")
 	}
 
-	if config.Key == "" {
+	if query.Has("token") && config.Token == "" {
 		return errors.New("missing field 'token'")
 	}
 
@@ -66,6 +63,5 @@ func (config *Config) getURL(_ types.ConfigQueryResolver) *url.URL {
 }
 
 const (
-	// Scheme is the identifying part of this service's configuration URL.
 	Scheme = "googlechat"
 )

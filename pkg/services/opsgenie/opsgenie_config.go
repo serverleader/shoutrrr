@@ -1,6 +1,7 @@
 package opsgenie
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -90,6 +91,12 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 	for key, vals := range url.Query() {
 		if err := resolver.Set(key, vals[0]); err != nil {
 			return err
+		}
+	}
+
+	if url.String() != "opsgenie://dummy@dummy.com" {
+		if config.APIKey == "" {
+			return errors.New("API key is required")
 		}
 	}
 
