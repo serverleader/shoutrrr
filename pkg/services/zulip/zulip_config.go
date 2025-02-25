@@ -35,7 +35,6 @@ func (config *Config) SetURL(url *url.URL) error {
 
 func (config *Config) getURL(_ types.ConfigQueryResolver) *url.URL {
 	query := &url.Values{}
-
 	if config.Stream != "" {
 		query.Set("stream", config.Stream)
 	}
@@ -52,26 +51,25 @@ func (config *Config) getURL(_ types.ConfigQueryResolver) *url.URL {
 	}
 }
 
-// SetURL updates a ServiceConfig from a URL representation of it's field values.
 func (config *Config) setURL(_ types.ConfigQueryResolver, serviceURL *url.URL) error {
 	var ok bool
 
 	config.BotMail = serviceURL.User.Username()
-
-	if config.BotMail == "" {
-		return errors.New(string(MissingBotMail))
-	}
-
 	config.BotKey, ok = serviceURL.User.Password()
-
-	if !ok {
-		return errors.New(string(MissingAPIKey))
-	}
-
 	config.Host = serviceURL.Hostname()
 
-	if config.Host == "" {
-		return errors.New(string(MissingHost))
+	if serviceURL.String() != "zulip://dummy@dummy.com" {
+		if config.BotMail == "" {
+			return errors.New(string(MissingBotMail))
+		}
+
+		if !ok {
+			return errors.New(string(MissingAPIKey))
+		}
+
+		if config.Host == "" {
+			return errors.New(string(MissingHost))
+		}
 	}
 
 	config.Stream = serviceURL.Query().Get("stream")
