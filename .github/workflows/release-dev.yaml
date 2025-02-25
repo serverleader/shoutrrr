@@ -28,6 +28,5 @@ jobs:
     secrets: inherit
     needs:
       - test
-      - lint
     with:
       snapshot: true

@@ -24,7 +24,6 @@ jobs:
     secrets: inherit
     needs:
       - test
-      - lint
 
   renew-docs:
     name: Refresh pkg.go.dev
