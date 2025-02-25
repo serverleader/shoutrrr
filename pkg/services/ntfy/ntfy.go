@@ -18,13 +18,13 @@ import (
 // Service sends notifications Ntfy.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
 // Send a notification message to Ntfy.
 func (service *Service) Send(message string, params *types.Params) error {
-	config := service.config
+	config := service.Config
 
 	if err := service.pkr.UpdateConfigFromParams(config, params); err != nil {
 		return err
@@ -40,12 +40,12 @@ func (service *Service) Send(message string, params *types.Params) error {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.Config = &Config{}
+	service.pkr = format.NewPropKeyResolver(service.Config)
 
-	_ = service.pkr.SetDefaultProps(service.config)
+	_ = service.pkr.SetDefaultProps(service.Config)
 
-	return service.config.setURL(&service.pkr, configURL)
+	return service.Config.setURL(&service.pkr, configURL)
 }
 
 func (service *Service) sendAPI(config *Config, message string) error {

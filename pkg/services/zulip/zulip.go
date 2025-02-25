@@ -13,7 +13,7 @@ import (
 // Service sends notifications to a pre-configured channel or user.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 }
 
 const (
@@ -26,7 +26,7 @@ func (service *Service) Send(message string, params *types.Params) error {
 	// Clone the config because we might modify stream and/or
 	// topic with values from the parameters and they should only
 	// change this Send().
-	config := service.config.Clone()
+	config := service.Config.Clone()
 
 	if params != nil {
 		if stream, found := (*params)["stream"]; found {
@@ -56,9 +56,9 @@ func (service *Service) Send(message string, params *types.Params) error {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
+	service.Config = &Config{}
 
-	if err := service.config.setURL(nil, configURL); err != nil {
+	if err := service.Config.setURL(nil, configURL); err != nil {
 		return err
 	}
 

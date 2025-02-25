@@ -17,13 +17,13 @@ import (
 // Service providing a generic notification service.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
 // Send a notification message to a generic webhook endpoint.
 func (service *Service) Send(message string, paramsPtr *types.Params) error {
-	config := *service.config
+	config := *service.Config
 
 	var params types.Params
 	if paramsPtr == nil {
@@ -51,10 +51,10 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	service.Logger.SetLogger(logger)
 
 	config, pkr := DefaultConfig()
-	service.config = config
+	service.Config = config
 	service.pkr = pkr
 
-	return service.config.setURL(&service.pkr, configURL)
+	return service.Config.setURL(&service.pkr, configURL)
 }
 
 // GetConfigURLFromCustom creates a regular service URL from one with a custom host.

@@ -62,7 +62,7 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 				serviceURL := testutils.URLMust("ntfy://hostname/topic")
 				gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 
-				gomega.Expect(*service.config).To(gomega.Equal(Config{
+				gomega.Expect(*service.Config).To(gomega.Equal(Config{
 					Host:     "hostname",
 					Topic:    "topic",
 					Scheme:   "https",
@@ -97,7 +97,7 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 			serviceURL := testutils.URLMust("ntfy://:devicekey@hostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 
-			httpmock.RegisterResponder("POST", service.config.GetAPIURL(), testutils.JSONRespondMust(200, apiResponse{
+			httpmock.RegisterResponder("POST", service.Config.GetAPIURL(), testutils.JSONRespondMust(200, apiResponse{
 				Code:    http.StatusOK,
 				Message: "OK",
 			}))
@@ -108,7 +108,7 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 			serviceURL := testutils.URLMust("ntfy://:devicekey@hostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 
-			httpmock.RegisterResponder("POST", service.config.GetAPIURL(), testutils.JSONRespondMust(500, apiResponse{
+			httpmock.RegisterResponder("POST", service.Config.GetAPIURL(), testutils.JSONRespondMust(500, apiResponse{
 				Code:    500,
 				Message: "someone turned off the internet",
 			}))

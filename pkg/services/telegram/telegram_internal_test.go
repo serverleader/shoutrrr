@@ -101,11 +101,11 @@ func getPayloadFromURL(testURL string, message string, logger *log.Logger) (Send
 		return SendMessagePayload{}, err
 	}
 
-	if len(telegram.config.Chats) < 1 {
+	if len(telegram.Config.Chats) < 1 {
 		return SendMessagePayload{}, errors.New("no channels were supplied")
 	}
 
-	return createSendMessagePayload(message, telegram.config.Chats[0], telegram.config), nil
+	return createSendMessagePayload(message, telegram.Config.Chats[0], telegram.Config), nil
 }
 
 func getPayloadStringFromURL(testURL string, message string, logger *log.Logger) ([]byte, error) {

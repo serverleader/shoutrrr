@@ -175,7 +175,7 @@ var _ = ginkgo.Describe("the zulip service", func() {
 
 			httpmock.Activate()
 			defer httpmock.DeactivateAndReset()
-			apiURL := service.getAPIURL(service.config)
+			apiURL := service.getAPIURL(service.Config)
 			httpmock.RegisterResponder("POST", apiURL, httpmock.NewStringResponder(http.StatusBadRequest, "Bad Request"))
 			err = service.Send("test message", nil)
 			gomega.Expect(err).To(gomega.HaveOccurred())

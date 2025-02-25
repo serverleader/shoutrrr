@@ -22,7 +22,7 @@ const (
 // Service providing OpsGenie as a notification service.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
@@ -64,16 +64,16 @@ func (service *Service) sendAlert(url string, apiKey string, payload AlertPayloa
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.Config = &Config{}
+	service.pkr = format.NewPropKeyResolver(service.Config)
 
-	return service.config.setURL(&service.pkr, configURL)
+	return service.Config.setURL(&service.pkr, configURL)
 }
 
 // Send a notification message to OpsGenie
 // See: https://docs.opsgenie.com/docs/alert-api#create-alert
 func (service *Service) Send(message string, params *types.Params) error {
-	config := service.config
+	config := service.Config
 	endpointURL := fmt.Sprintf(alertEndpointTemplate, config.Host, config.Port)
 
 	payload, err := service.newAlertPayload(message, params)
@@ -90,7 +90,7 @@ func (service *Service) newAlertPayload(message string, params *types.Params) (A
 	}
 
 	// Defensive copy
-	payloadFields := *service.config
+	payloadFields := *service.Config
 
 	if err := service.pkr.UpdateConfigFromParams(&payloadFields, params); err != nil {
 		return AlertPayload{}, err

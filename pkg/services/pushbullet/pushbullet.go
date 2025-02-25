@@ -18,7 +18,7 @@ const (
 type Service struct {
 	standard.Standard
 	client jsonclient.Client
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
@@ -26,24 +26,24 @@ type Service struct {
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 
-	service.config = &Config{
+	service.Config = &Config{
 		Title: "Shoutrrr notification", // Explicitly set default
 	}
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.pkr = format.NewPropKeyResolver(service.Config)
 
-	if err := service.config.setURL(&service.pkr, configURL); err != nil {
+	if err := service.Config.setURL(&service.pkr, configURL); err != nil {
 		return err
 	}
 
 	service.client = jsonclient.NewClient()
-	service.client.Headers().Set("Access-Token", service.config.Token)
+	service.client.Headers().Set("Access-Token", service.Config.Token)
 
 	return nil
 }
 
 // Send a push notification via Pushbullet.
 func (service *Service) Send(message string, params *types.Params) error {
-	config := *service.config
+	config := *service.Config
 	if err := service.pkr.UpdateConfigFromParams(&config, params); err != nil {
 		return err
 	}

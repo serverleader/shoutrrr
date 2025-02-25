@@ -14,22 +14,22 @@ import (
 // Service providing Google Chat as a notification service.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 }
 
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
+	service.Config = &Config{}
 
-	err := service.config.SetURL(configURL)
+	err := service.Config.SetURL(configURL)
 
 	return err
 }
 
 // Send a notification message to Google Chat.
 func (service *Service) Send(message string, _ *types.Params) error {
-	config := service.config
+	config := service.Config
 
 	jsonBody, err := json.Marshal(JSON{
 		Text: message,

@@ -15,22 +15,22 @@ import (
 // Service sends notifications to a pre-configured channel or user.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.Config = &Config{}
+	service.pkr = format.NewPropKeyResolver(service.Config)
 
-	return service.config.setURL(&service.pkr, configURL)
+	return service.Config.setURL(&service.pkr, configURL)
 }
 
 // Send a notification message to Mattermost.
 func (service *Service) Send(message string, params *types.Params) error {
-	config := service.config
+	config := service.Config
 	apiURL := buildURL(config)
 
 	if err := service.pkr.UpdateConfigFromParams(config, params); err != nil {

@@ -15,7 +15,7 @@ const Scheme = "matrix"
 // Service providing Matrix as a notification service.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	client *client
 	pkr    format.PropKeyResolver
 }
@@ -23,31 +23,31 @@ type Service struct {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (s *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	s.SetLogger(logger)
-	s.config = &Config{}
+	s.Config = &Config{}
 
-	s.pkr = format.NewPropKeyResolver(s.config)
-	if err := s.config.setURL(&s.pkr, configURL); err != nil {
+	s.pkr = format.NewPropKeyResolver(s.Config)
+	if err := s.Config.setURL(&s.pkr, configURL); err != nil {
 		return err
 	}
 
-	s.client = newClient(s.config.Host, s.config.DisableTLS, logger)
-	if s.config.User != "" {
-		return s.client.login(s.config.User, s.config.Password)
+	s.client = newClient(s.Config.Host, s.Config.DisableTLS, logger)
+	if s.Config.User != "" {
+		return s.client.login(s.Config.User, s.Config.Password)
 	}
 
-	s.client.useToken(s.config.Password)
+	s.client.useToken(s.Config.Password)
 
 	return nil
 }
 
 // Send notification.
 func (s *Service) Send(message string, params *types.Params) error {
-	config := *s.config
+	config := *s.Config
 	if err := s.pkr.UpdateConfigFromParams(&config, params); err != nil {
 		return err
 	}
 
-	errors := s.client.sendMessage(message, s.config.Rooms)
+	errors := s.client.sendMessage(message, s.Config.Rooms)
 
 	if len(errors) > 0 {
 		for _, err := range errors {

@@ -24,13 +24,13 @@ const (
 // Service providing teams as a notification service.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
 // Send a notification message to Microsoft Teams.
 func (service *Service) Send(message string, params *types.Params) error {
-	config := service.config
+	config := service.Config
 
 	if err := service.pkr.UpdateConfigFromParams(config, params); err != nil {
 		service.Logf("Failed to update params: %v", err)
@@ -42,13 +42,13 @@ func (service *Service) Send(message string, params *types.Params) error {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{
+	service.Config = &Config{
 		Host: LegacyHost,
 	}
 
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.pkr = format.NewPropKeyResolver(service.Config)
 
-	return service.config.setURL(&service.pkr, configURL)
+	return service.Config.setURL(&service.pkr, configURL)
 }
 
 // GetConfigURLFromCustom creates a regular service URL from one with a custom host.

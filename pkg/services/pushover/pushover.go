@@ -21,13 +21,13 @@ const (
 // Service providing the notification service Pushover.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
 // Send a notification message to Pushover.
 func (service *Service) Send(message string, params *types.Params) error {
-	config := service.config
+	config := service.Config
 	if err := service.pkr.UpdateConfigFromParams(config, params); err != nil {
 		return err
 	}
@@ -73,10 +73,10 @@ func (service *Service) sendToDevice(device string, message string, config *Conf
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.Config = &Config{}
+	service.pkr = format.NewPropKeyResolver(service.Config)
 
-	if err := service.config.setURL(&service.pkr, configURL); err != nil {
+	if err := service.Config.setURL(&service.pkr, configURL); err != nil {
 		return err
 	}
 

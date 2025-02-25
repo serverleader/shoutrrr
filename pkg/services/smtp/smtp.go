@@ -23,7 +23,7 @@ const DefaultSMTPPort = 25
 type Service struct {
 	standard.Standard
 	standard.Templater
-	config            *Config
+	Config            *Config
 	multipartBoundary string
 	propKeyResolver   format.PropKeyResolver
 }
@@ -37,7 +37,7 @@ const (
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{
+	service.Config = &Config{
 		Port:        DefaultSMTPPort,
 		ToAddresses: nil,
 		Subject:     "",
@@ -48,17 +48,17 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 		ClientHost:  "localhost",
 	}
 
-	pkr := format.NewPropKeyResolver(service.config)
+	pkr := format.NewPropKeyResolver(service.Config)
 
-	if err := service.config.setURL(&pkr, configURL); err != nil {
+	if err := service.Config.setURL(&pkr, configURL); err != nil {
 		return err
 	}
 
-	if service.config.Auth == AuthTypes.Unknown {
-		if service.config.Username != "" {
-			service.config.Auth = AuthTypes.Plain
+	if service.Config.Auth == AuthTypes.Unknown {
+		if service.Config.Username != "" {
+			service.Config.Auth = AuthTypes.Plain
 		} else {
-			service.config.Auth = AuthTypes.None
+			service.Config.Auth = AuthTypes.None
 		}
 	}
 
@@ -69,12 +69,12 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 
 // Send a notification message to e-mail recipients.
 func (service *Service) Send(message string, params *types.Params) error {
-	config := service.config.Clone()
+	config := service.Config.Clone()
 	if err := service.propKeyResolver.UpdateConfigFromParams(&config, params); err != nil {
 		return fail(FailApplySendParams, err)
 	}
 
-	client, err := getClientConnection(service.config)
+	client, err := getClientConnection(service.Config)
 	if err != nil {
 		return fail(FailGetSMTPClient, err)
 	}
@@ -229,7 +229,7 @@ func (service *Service) sendToRecipient(client *smtp.Client, toAddress string, c
 }
 
 func (service *Service) getHeaders(toAddress string, subject string) map[string]string {
-	conf := service.config
+	conf := service.Config
 
 	var contentType string
 	if conf.UseHTML {

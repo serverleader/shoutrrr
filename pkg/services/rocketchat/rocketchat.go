@@ -14,15 +14,15 @@ import (
 // Service sends notifications to a pre-configured channel or user.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 }
 
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 
-	service.config = &Config{}
-	if err := service.config.SetURL(configURL); err != nil {
+	service.Config = &Config{}
+	if err := service.Config.SetURL(configURL); err != nil {
 		return err
 	}
 
@@ -35,7 +35,7 @@ func (service *Service) Send(message string, params *types.Params) error {
 
 	var err error
 
-	config := service.config
+	config := service.Config
 	apiURL := buildURL(config)
 	json, _ := CreateJSONPayload(config, message, params)
 

@@ -12,7 +12,7 @@ import (
 // Service is the Logger service struct.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 }
 
 // Send a notification message to log.
@@ -50,7 +50,7 @@ func (service *Service) doSend(data types.Params) error {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(_ *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
+	service.Config = &Config{}
 
 	return nil
 }

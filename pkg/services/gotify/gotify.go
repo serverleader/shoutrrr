@@ -17,7 +17,7 @@ import (
 // Service providing Gotify as a notification service.
 type Service struct {
 	standard.Standard
-	config     *Config
+	Config     *Config
 	pkr        format.PropKeyResolver
 	httpClient *http.Client
 	client     jsonclient.Client
@@ -26,11 +26,11 @@ type Service struct {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{
+	service.Config = &Config{
 		Title: "Shoutrrr notification",
 	}
-	service.pkr = format.NewPropKeyResolver(service.config)
-	err := service.config.SetURL(configURL)
+	service.pkr = format.NewPropKeyResolver(service.Config)
+	err := service.Config.SetURL(configURL)
 
 	service.httpClient = &http.Client{
 		Transport: &http.Transport{
@@ -38,7 +38,7 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 				// If DisableTLS is specified, we might still need to disable TLS verification
 				// since the default configuration of Gotify redirects HTTP to HTTPS
 				// Note that this cannot be overridden using params, only using the config URL
-				InsecureSkipVerify: service.config.DisableTLS,
+				InsecureSkipVerify: service.Config.DisableTLS,
 			},
 		},
 		// Set a reasonable timeout to prevent one bad transfer from block all subsequent ones
@@ -90,7 +90,7 @@ func (service *Service) Send(message string, params *types.Params) error {
 		params = &types.Params{}
 	}
 
-	config := service.config
+	config := service.Config
 	if err := service.pkr.UpdateConfigFromParams(config, params); err != nil {
 		service.Logf("Failed to update params: %v", err)
 	}

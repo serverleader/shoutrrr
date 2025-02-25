@@ -135,16 +135,16 @@ var _ = ginkgo.Describe("the SMTP service", func() {
 	ginkgo.When("sending a message", func() {
 		ginkgo.When("the service is not configured correctly", func() {
 			ginkgo.It("should fail to send messages", func() {
-				service := Service{config: &Config{}}
+				service := Service{Config: &Config{}}
 				gomega.Expect(service.Send("test message", nil)).To(matchFailure(FailGetSMTPClient))
 
-				service.config.Encryption = EncMethods.ImplicitTLS
+				service.Config.Encryption = EncMethods.ImplicitTLS
 				gomega.Expect(service.Send("test message", nil)).To(matchFailure(FailGetSMTPClient))
 			})
 		})
 		ginkgo.When("an invalid param is passed", func() {
 			ginkgo.It("should fail to send messages", func() {
-				service := Service{config: &Config{}}
+				service := Service{Config: &Config{}}
 				gomega.Expect(service.Send("test message", &types.Params{"invalid": "value"})).To(matchFailure(FailApplySendParams))
 			})
 		})
@@ -498,7 +498,7 @@ var _ = ginkgo.Describe("the SMTP service", func() {
 			serviceURL := testutils.URLMust(testURL)
 			err := service.Initialize(serviceURL, logger)
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
-			gomega.Expect(service.config.Port).To(gomega.Equal(uint16(DefaultSMTPPort)))
+			gomega.Expect(service.Config.Port).To(gomega.Equal(uint16(DefaultSMTPPort)))
 		})
 	})
 })
@@ -570,7 +570,7 @@ func testIntegration(testURL string, responses []string, htmlTemplate string, pl
 
 	fakeTLSEnabled(client, serviceURL.Hostname())
 
-	ferr := service.doSend(client, "Test message", service.config)
+	ferr := service.doSend(client, "Test message", service.Config)
 
 	received := tcfaker.GetClientSentences()
 	for _, expected := range expectRec {

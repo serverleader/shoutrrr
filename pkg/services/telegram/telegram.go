@@ -17,7 +17,7 @@ const (
 // Service sends notifications to a given telegram chat.
 type Service struct {
 	standard.Standard
-	config *Config
+	Config *Config
 	pkr    format.PropKeyResolver
 }
 
@@ -27,7 +27,7 @@ func (service *Service) Send(message string, params *types.Params) error {
 		return errors.New("Message exceeds the max length")
 	}
 
-	config := *service.config
+	config := *service.Config
 	if err := service.pkr.UpdateConfigFromParams(&config, params); err != nil {
 		return err
 	}
@@ -38,13 +38,13 @@ func (service *Service) Send(message string, params *types.Params) error {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{
+	service.Config = &Config{
 		Preview:      true,
 		Notification: true,
 	}
-	service.pkr = format.NewPropKeyResolver(service.config)
+	service.pkr = format.NewPropKeyResolver(service.Config)
 
-	if err := service.config.setURL(&service.pkr, configURL); err != nil {
+	if err := service.Config.setURL(&service.pkr, configURL); err != nil {
 		return err
 	}
 
@@ -52,7 +52,7 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 }
 
 func (service *Service) sendMessageForChatIDs(message string, config *Config) error {
-	for _, chat := range service.config.Chats {
+	for _, chat := range service.Config.Chats {
 		if err := sendMessageToAPI(message, chat, config); err != nil {
 			return err
 		}
@@ -63,7 +63,7 @@ func (service *Service) sendMessageForChatIDs(message string, config *Config) er
 
 // GetConfig returns the Config for the service.
 func (service *Service) GetConfig() *Config {
-	return service.config
+	return service.Config
 }
 
 func sendMessageToAPI(message string, chat string, config *Config) error {
