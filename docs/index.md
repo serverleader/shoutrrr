@@ -15,6 +15,7 @@
   <a href="https://www.codacy.com/gh/nicholas-fedor/shoutrrr/dashboard?utm_source=github.com&utm_medium=referral&utm_content=nicholas-fedor/shoutrrr&utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/47eed72de79448e2a6e297d770355544" alt="Codacy Badge"></a>
   <a href="https://goreportcard.com/report/github.com/nicholas-fedor/shoutrrr"><img src="https://goreportcard.com/badge/github.com/nicholas-fedor/shoutrrr" alt="report card"></a><br>
   <a href="https://pkg.go.dev/github.com/nicholas-fedor/shoutrrr"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square" alt="go.dev reference"></a>
+  <a href="https://hub.docker.com/r/nickfedor/shoutrrr"><img src="https://img.shields.io/docker/pulls/nickfedor/shoutrrr.svg" alt="Pulls from DockerHub"></a>
   <a href="https://github.com/nicholas-fedor/shoutrrr"><img src="https://img.shields.io/github/languages/code-size/nicholas-fedor/shoutrrr.svg?style=flat-square" alt="github code size in bytes"></a>
   <a href="https://github.com/nicholas-fedor/shoutrrr/blob/main/LICENSE"><img src="https://img.shields.io/github/license/nicholas-fedor/shoutrrr.svg?style=flat-square" alt="license"></a>
 </p>
