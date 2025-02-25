@@ -2,15 +2,16 @@ package generic
 
 import (
 	"errors"
-	"github.com/containrrr/shoutrrr/internal/testutils"
 	"io"
 	"log"
 	"net/url"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
+
 	"github.com/jarcoal/httpmock"
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -62,7 +63,6 @@ var _ = Describe("the Generic service", func() {
 			whURL := config.WebhookURL().String()
 			Expect(whURL).To(Equal("https://example.com/?template=passed"))
 			Expect(srvURL.String()).To(Equal(expectedURL))
-
 		})
 		It("should handle both escaped and service prop version of keys", func() {
 			config, _ := testServiceURL("generic://example.com/?__template=passed&template=captured")
@@ -156,7 +156,6 @@ var _ = Describe("the Generic service", func() {
 
 				outputURL := config.GetURL()
 				Expect(outputURL.String()).To(Equal(testURL))
-
 			})
 		})
 	})
@@ -245,7 +244,6 @@ var _ = Describe("the Generic service", func() {
 				Expect(err).To(HaveOccurred())
 			})
 		})
-
 	})
 	Describe("sending the payload", func() {
 		var err error
@@ -316,7 +314,6 @@ var _ = Describe("the Generic service", func() {
 
 			Expect(params).To(Equal(types.Params{"title": "TITLE"}))
 		})
-
 	})
 	Describe("the service upstream client", func() {
 		var server *ghttp.Server
@@ -390,14 +387,17 @@ func testCustomURL(testURL string) (*Config, *url.URL) {
 	Expect(err).NotTo(HaveOccurred())
 	config, pkr, err := ConfigFromWebhookURL(*customURL)
 	Expect(err).NotTo(HaveOccurred())
+
 	return config, config.getURL(&pkr)
 }
 
 func testServiceURL(testURL string) (*Config, *url.URL) {
 	serviceURL, err := url.Parse(testURL)
 	Expect(err).NotTo(HaveOccurred())
+
 	config, pkr := DefaultConfig()
 	err = config.setURL(&pkr, serviceURL)
 	Expect(err).NotTo(HaveOccurred())
+
 	return config, config.getURL(&pkr)
 }

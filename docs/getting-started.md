@@ -5,6 +5,7 @@
 Using shoutrrr is easy! There is currently two ways of using it as a package.
 
 ### Using the direct send command
+
 Easiest to use, but very limited.
 
 ```go
@@ -13,6 +14,7 @@ err := shoutrrr.Send(url, "Hello world (or slack channel) !")
 ```
 
 ### Using a sender
+
 Using a sender gives you the ability to preconfigure multiple notification services and send to all of them with the same `Send(message, params)` method.
 
 ```go
@@ -32,12 +34,12 @@ func doWork() error {
     
     // Maybe get creative...?
     defer func(start time.Time) { 
-    	sender.Enqueue("Elapsed: %v", time.Now().Sub(start)) 
+     sender.Enqueue("Elapsed: %v", time.Now().Sub(start)) 
     }(time.Now())
     
     if err := doMoreWork(); err != nil {
         sender.Enqueue("Oh no! %v", err)
-    	
+     
         // This will send the currently queued up messages...
         return
     }   
@@ -48,7 +50,6 @@ func doWork() error {
 }
 
 ```
-
 
 ## Through the CLI
 
@@ -67,7 +68,7 @@ On a system with Go installed you can install the latest Shoutrrr CLI
 command with:
 
 ```shell
-go install github.com/containrrr/shoutrrr/shoutrrr@latest
+go install github.com/nicholas-fedor/shoutrrr/shoutrrr@latest
 ```
 
 ### Commands
@@ -96,7 +97,7 @@ $ shoutrrr verify \
 Generate and display the configuration for a notification service url.
 
 ```bash
-$ shoutrrr generate [OPTIONS] <SERVICE>
+shoutrrr generate [OPTIONS] <SERVICE>
 ```
 
 | Flags                        | Description                                     |
@@ -148,7 +149,7 @@ jobs:
       - name: Some other steps needed for deploying
         run: ...
       - name: Shoutrrr
-        uses: containrrr/shoutrrr-action@v1
+        uses: nicholas-fedor/shoutrrr-action@v1
         with:
           url: ${{ secrets.SHOUTRRR_URL }}
           title: Deployed ${{ github.sha }}

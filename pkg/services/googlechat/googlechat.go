@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
 // Service providing Google Chat as a notification service.
@@ -41,6 +41,7 @@ func (service *Service) Send(message string, _ *types.Params) error {
 	postURL := getAPIURL(config)
 
 	jsonBuffer := bytes.NewBuffer(jsonBody)
+
 	resp, err := http.Post(postURL.String(), "application/json", jsonBuffer)
 	if err != nil {
 		return fmt.Errorf("failed to send notification to Google Chat: %s", err)

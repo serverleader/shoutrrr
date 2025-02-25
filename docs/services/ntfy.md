@@ -1,6 +1,6 @@
 # Ntfy
 
-Upstream docs: https://docs.ntfy.sh/publish/
+Upstream docs: <https://docs.ntfy.sh/publish/>
 
 ## URL Format
 

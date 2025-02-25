@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/internal/testutils"
-	"github.com/containrrr/shoutrrr/pkg/router"
-	"github.com/containrrr/shoutrrr/pkg/types"
 	"github.com/jarcoal/httpmock"
+	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
+	"github.com/nicholas-fedor/shoutrrr/pkg/router"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/ginkgo/v2"
+	"github.com/onsi/gomega"
 )
 
 func TestServices(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Service Compliance Suite")
+	gomega.RegisterFailHandler(ginkgo.Fail)
+	ginkgo.RunSpecs(t, "Service Compliance Suite")
 }
 
 var serviceURLs = map[string]string{
@@ -41,42 +41,53 @@ var serviceURLs = map[string]string{
 }
 
 var serviceResponses = map[string]string{
-	"pushbullet": `{"created": 0}`,
+	"discord":    "",
 	"gotify":     `{"id": 0}`,
+	"googlechat": "",
+	"hangouts":   "",
+	"ifttt":      "",
+	"join":       "",
+	"logger":     "",
+	"mattermost": "",
+	"opsgenie":   "",
+	"pushbullet": `{"type": "note", "body": "test", "title": "test title", "active": true, "created": 0}`,
+	"pushover":   "",
+	"rocketchat": "",
+	"slack":      "",
+	"smtp":       "",
+	"teams":      "",
+	"telegram":   "",
+	"xmpp":       "",
+	"zulip":      "",
 }
 
-var logger = log.New(GinkgoWriter, "Test", log.LstdFlags)
+var logger = log.New(ginkgo.GinkgoWriter, "Test", log.LstdFlags)
 
-var _ = Describe("services", func() {
-
-	BeforeEach(func() {
-
+var _ = ginkgo.Describe("services", func() {
+	ginkgo.BeforeEach(func() {
 	})
-	AfterEach(func() {
-
+	ginkgo.AfterEach(func() {
 	})
 
-	When("passed the a title param", func() {
-
+	ginkgo.When("passed the a title param", func() {
 		var serviceRouter *router.ServiceRouter
 
-		AfterEach(func() {
+		ginkgo.AfterEach(func() {
 			httpmock.DeactivateAndReset()
 		})
 
 		for key, configURL := range serviceURLs {
 
-			key := key //necessary to ensure the correct value is passed to the closure
-			configURL := configURL
+			// necessary to ensure the correct value is passed to the closure
+
 			serviceRouter, _ = router.New(logger)
 
-			It("should not throw an error for "+key, func() {
-
+			ginkgo.It("should not throw an error for "+key, func() {
 				if key == "smtp" {
-					Skip("smtp does not use HTTP and needs a specific test")
+					ginkgo.Skip("smtp does not use HTTP and needs a specific test")
 				}
 				if key == "xmpp" {
-					Skip("not supported")
+					ginkgo.Skip("not supported")
 				}
 
 				httpmock.Activate()
@@ -88,7 +99,7 @@ var _ = Describe("services", func() {
 				httpmock.RegisterNoResponder(httpmock.NewStringResponder(respStatus, serviceResponses[key]))
 
 				service, err := serviceRouter.Locate(configURL)
-				Expect(err).NotTo(HaveOccurred())
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
 				if mockService, ok := service.(testutils.MockClientService); ok {
 					httpmock.ActivateNonDefault(mockService.GetHTTPClient())
@@ -97,10 +108,9 @@ var _ = Describe("services", func() {
 				err = service.Send("test", (*types.Params)(&map[string]string{
 					"title": "test title",
 				}))
-				Expect(err).NotTo(HaveOccurred())
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
 			})
 
 		}
 	})
-
 })

@@ -1,6 +1,6 @@
 package teams
 
-// JSON is the actual payload being sent to the teams api
+// JSON is the actual payload being sent to the teams api.
 type payload struct {
 	CardType   string    `json:"@type"`
 	Context    string    `json:"@context"`

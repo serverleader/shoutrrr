@@ -1,27 +1,27 @@
 package generic
 
 import (
-	"encoding/json"
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
-
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
-// Service providing a generic notification service
+// Service providing a generic notification service.
 type Service struct {
 	standard.Standard
 	config *Config
 	pkr    format.PropKeyResolver
 }
 
-// Send a notification message to a generic webhook endpoint
+// Send a notification message to a generic webhook endpoint.
 func (service *Service) Send(message string, paramsPtr *types.Params) error {
 	config := *service.config
 
@@ -46,9 +46,10 @@ func (service *Service) Send(message string, paramsPtr *types.Params) error {
 	return nil
 }
 
-// Initialize loads ServiceConfig from configURL and sets logger for this Service
+// Initialize loads ServiceConfig from configURL and sets logger for this Service.
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
+
 	config, pkr := DefaultConfig()
 	service.config = config
 	service.pkr = pkr
@@ -56,21 +57,24 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return service.config.setURL(&service.pkr, configURL)
 }
 
-// GetConfigURLFromCustom creates a regular service URL from one with a custom host
+// GetConfigURLFromCustom creates a regular service URL from one with a custom host.
 func (*Service) GetConfigURLFromCustom(customURL *url.URL) (serviceURL *url.URL, err error) {
 	webhookURL := *customURL
 	if strings.HasPrefix(webhookURL.Scheme, Scheme) {
 		webhookURL.Scheme = webhookURL.Scheme[len(Scheme)+1:]
 	}
+
 	config, pkr, err := ConfigFromWebhookURL(webhookURL)
 	if err != nil {
 		return nil, err
 	}
+
 	return config.getURL(&pkr), nil
 }
 
 func (service *Service) doSend(config *Config, params types.Params) error {
 	postURL := config.WebhookURL().String()
+
 	payload, err := service.getPayload(config, params)
 	if err != nil {
 		return err
@@ -80,17 +84,22 @@ func (service *Service) doSend(config *Config, params types.Params) error {
 	if err == nil {
 		req.Header.Set("Content-Type", config.ContentType)
 		req.Header.Set("Accept", config.ContentType)
+
 		for key, value := range config.headers {
 			req.Header.Set(key, value)
 		}
+
 		var res *http.Response
+
 		res, err = http.DefaultClient.Do(req)
 		if res != nil && res.Body != nil {
 			defer res.Body.Close()
+
 			if body, errRead := io.ReadAll(res.Body); errRead == nil {
 				service.Log("Server response: ", string(body))
 			}
 		}
+
 		if err == nil && res.StatusCode >= http.StatusMultipleChoices {
 			err = fmt.Errorf("server returned response status code %s", res.Status)
 		}
@@ -107,12 +116,15 @@ func (service *Service) getPayload(config *Config, params types.Params) (io.Read
 		for key, value := range config.extraData {
 			params[key] = value
 		}
+
 		jsonBytes, err := json.Marshal(params)
 		if err != nil {
 			return nil, err
 		}
+
 		return bytes.NewBuffer(jsonBytes), nil
 	}
+
 	tpl, found := service.GetTemplate(config.Template)
 	if !found {
 		return nil, fmt.Errorf("template %q has not been loaded", config.Template)
@@ -120,17 +132,22 @@ func (service *Service) getPayload(config *Config, params types.Params) (io.Read
 
 	bb := &bytes.Buffer{}
 	err := tpl.Execute(bb, params)
+
 	return bb, err
 }
 
 func createSendParams(config *Config, params types.Params, message string) types.Params {
 	sendParams := types.Params{}
+
 	for key, val := range params {
 		if key == types.TitleKey {
 			key = config.TitleKey
 		}
+
 		sendParams[key] = val
 	}
+
 	sendParams[config.MessageKey] = message
+
 	return sendParams
 }

@@ -21,7 +21,7 @@
 The host can be either api.opsgenie.com or api.eu.opsgenie.com depending on the location of your instance. See
 the [OpsGenie documentation](https://docs.opsgenie.com/docs/alert-api) for details.
 
-```
+```console
 opsgenie://api.opsgenie.com/eb243592-faa2-4ba2-a551q-1afdf565c889
                             └───────────────────────────────────┘
                                            token
@@ -59,8 +59,6 @@ You can optionally specify the parameters in the URL:
 
 Example using the command line:
 
-```shell
+```console
 shoutrrr send -u 'opsgenie://api.eu.opsgenie.com/token?tags=["tag1","tag2"]&description=testing&responders=[{"username":"superuser", "type": "user"}]&entity=Example Entity&source=Example Source&actions=["asdf", "bcde"]' -m "Hello World6"
 ```
-
-

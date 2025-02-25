@@ -1,8 +1,8 @@
 package smtp
 
 import (
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
 type authType int
@@ -16,7 +16,7 @@ type authTypeVals struct {
 	Enum    types.EnumFormatter
 }
 
-// AuthTypes is the enum helper for populating the Auth field
+// AuthTypes is the enum helper for populating the Auth field.
 var AuthTypes = &authTypeVals{
 	None:    0,
 	Plain:   1,

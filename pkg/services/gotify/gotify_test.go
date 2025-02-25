@@ -5,151 +5,150 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/internal/testutils"
+	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
 
 	"github.com/jarcoal/httpmock"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/ginkgo/v2"
+	"github.com/onsi/gomega"
 )
 
 func TestGotify(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Shoutrrr Gotify Suite")
+	gomega.RegisterFailHandler(ginkgo.Fail)
+	ginkgo.RunSpecs(t, "Shoutrrr Gotify Suite")
 }
 
 var logger *log.Logger
 
-var _ = Describe("the Gotify plugin URL building and token validation functions", func() {
-	It("should build a valid gotify URL", func() {
+var _ = ginkgo.Describe("the Gotify plugin URL building and token validation functions", func() {
+	ginkgo.It("should build a valid gotify URL", func() {
 		config := Config{
 			Token: "Aaa.bbb.ccc.ddd",
 			Host:  "my.gotify.tld",
 		}
 		url, err := buildURL(&config)
-		Expect(err).To(BeNil())
+		gomega.Expect(err).To(gomega.BeNil())
 		expectedURL := "https://my.gotify.tld/message?token=Aaa.bbb.ccc.ddd"
-		Expect(url).To(Equal(expectedURL))
+		gomega.Expect(url).To(gomega.Equal(expectedURL))
 	})
 
-	When("TLS is disabled", func() {
-		It("should use http schema", func() {
+	ginkgo.When("TLS is disabled", func() {
+		ginkgo.It("should use http schema", func() {
 			config := Config{
 				Token:      "Aaa.bbb.ccc.ddd",
 				Host:       "my.gotify.tld",
 				DisableTLS: true,
 			}
 			url, err := buildURL(&config)
-			Expect(err).To(BeNil())
+			gomega.Expect(err).To(gomega.BeNil())
 			expectedURL := "http://my.gotify.tld/message?token=Aaa.bbb.ccc.ddd"
-			Expect(url).To(Equal(expectedURL))
+			gomega.Expect(url).To(gomega.Equal(expectedURL))
 		})
 	})
 
-	When("a custom path is provided", func() {
-		It("should add it to the URL", func() {
+	ginkgo.When("a custom path is provided", func() {
+		ginkgo.It("should add it to the URL", func() {
 			config := Config{
 				Token: "Aaa.bbb.ccc.ddd",
 				Host:  "my.gotify.tld",
 				Path:  "/gotify",
 			}
 			url, err := buildURL(&config)
-			Expect(err).To(BeNil())
+			gomega.Expect(err).To(gomega.BeNil())
 			expectedURL := "https://my.gotify.tld/gotify/message?token=Aaa.bbb.ccc.ddd"
-			Expect(url).To(Equal(expectedURL))
+			gomega.Expect(url).To(gomega.Equal(expectedURL))
 		})
 	})
 
-	When("provided a valid token", func() {
-		It("should return true", func() {
+	ginkgo.When("provided a valid token", func() {
+		ginkgo.It("should return true", func() {
 			token := "Ahwbsdyhwwgarxd"
-			Expect(isTokenValid(token)).To(BeTrue())
+			gomega.Expect(isTokenValid(token)).To(gomega.BeTrue())
 		})
 	})
-	When("provided a token with an invalid prefix", func() {
-		It("should return false", func() {
+	ginkgo.When("provided a token with an invalid prefix", func() {
+		ginkgo.It("should return false", func() {
 			token := "Chwbsdyhwwgarxd"
-			Expect(isTokenValid(token)).To(BeFalse())
+			gomega.Expect(isTokenValid(token)).To(gomega.BeFalse())
 		})
 	})
-	When("provided a token with an invalid length", func() {
-		It("should return false", func() {
+	ginkgo.When("provided a token with an invalid length", func() {
+		ginkgo.It("should return false", func() {
 			token := "Chwbsdyhwwga"
-			Expect(isTokenValid(token)).To(BeFalse())
+			gomega.Expect(isTokenValid(token)).To(gomega.BeFalse())
 		})
 	})
-	Describe("creating the API URL", func() {
-		When("the token is invalid", func() {
-			It("should return an error", func() {
+	ginkgo.Describe("creating the API URL", func() {
+		ginkgo.When("the token is invalid", func() {
+			ginkgo.It("should return an error", func() {
 				config := Config{
 					Token: "invalid",
 				}
 				_, err := buildURL(&config)
-				Expect(err).To(HaveOccurred())
+				gomega.Expect(err).To(gomega.HaveOccurred())
 			})
 		})
 	})
-	Describe("creating a config", func() {
-		When("parsing the configuration URL", func() {
-			It("should be identical after de-/serialization (with path)", func() {
+	ginkgo.Describe("creating a config", func() {
+		ginkgo.When("parsing the configuration URL", func() {
+			ginkgo.It("should be identical after de-/serialization (with path)", func() {
 				testURL := "gotify://my.gotify.tld/gotify/Aaa.bbb.ccc.ddd?title=Test+title"
 
 				config := &Config{}
-				Expect(config.SetURL(testutils.URLMust(testURL))).To(Succeed())
-				Expect(config.GetURL().String()).To(Equal(testURL))
+				gomega.Expect(config.SetURL(testutils.URLMust(testURL))).To(gomega.Succeed())
+				gomega.Expect(config.GetURL().String()).To(gomega.Equal(testURL))
 			})
-			It("should be identical after de-/serialization (without path)", func() {
+			ginkgo.It("should be identical after de-/serialization (without path)", func() {
 				testURL := "gotify://my.gotify.tld/Aaa.bbb.ccc.ddd?disabletls=Yes&priority=1&title=Test+title"
 
 				config := &Config{}
-				Expect(config.SetURL(testutils.URLMust(testURL))).To(Succeed())
-				Expect(config.GetURL().String()).To(Equal(testURL))
-
+				gomega.Expect(config.SetURL(testutils.URLMust(testURL))).To(gomega.Succeed())
+				gomega.Expect(config.GetURL().String()).To(gomega.Equal(testURL))
 			})
-			It("should allow slash at the end of the token", func() {
+			ginkgo.It("should allow slash at the end of the token", func() {
 				url := testutils.URLMust("gotify://my.gotify.tld/Aaa.bbb.ccc.ddd/")
 
 				config := &Config{}
-				Expect(config.SetURL(url)).To(Succeed())
-				Expect(config.Token).To(Equal("Aaa.bbb.ccc.ddd"))
+				gomega.Expect(config.SetURL(url)).To(gomega.Succeed())
+				gomega.Expect(config.Token).To(gomega.Equal("Aaa.bbb.ccc.ddd"))
 			})
-			It("should allow slash at the end of the token, with additional path", func() {
+			ginkgo.It("should allow slash at the end of the token, with additional path", func() {
 				url := testutils.URLMust("gotify://my.gotify.tld/path/to/gotify/Aaa.bbb.ccc.ddd/")
 
 				config := &Config{}
-				Expect(config.SetURL(url)).To(Succeed())
-				Expect(config.Token).To(Equal("Aaa.bbb.ccc.ddd"))
+				gomega.Expect(config.SetURL(url)).To(gomega.Succeed())
+				gomega.Expect(config.Token).To(gomega.Equal("Aaa.bbb.ccc.ddd"))
 			})
-			It("should not crash on empty token or path slash at the end of the token", func() {
+			ginkgo.It("should not crash on empty token or path slash at the end of the token", func() {
 				config := &Config{}
-				Expect(config.SetURL(testutils.URLMust("gotify://my.gotify.tld//"))).To(Succeed())
-				Expect(config.SetURL(testutils.URLMust("gotify://my.gotify.tld/"))).To(Succeed())
+				gomega.Expect(config.SetURL(testutils.URLMust("gotify://my.gotify.tld//"))).To(gomega.Succeed())
+				gomega.Expect(config.SetURL(testutils.URLMust("gotify://my.gotify.tld/"))).To(gomega.Succeed())
 			})
 		})
 	})
 
-	Describe("sending the payload", func() {
+	ginkgo.Describe("sending the payload", func() {
 		var err error
 		var service Service
-		AfterEach(func() {
+		ginkgo.AfterEach(func() {
 			httpmock.DeactivateAndReset()
 		})
-		It("should not report an error if the server accepts the payload", func() {
+		ginkgo.It("should not report an error if the server accepts the payload", func() {
 			serviceURL, _ := url.Parse("gotify://my.gotify.tld/Aaa.bbb.ccc.ddd")
 			err = service.Initialize(serviceURL, logger)
 			httpmock.ActivateNonDefault(service.GetHTTPClient())
-			Expect(err).NotTo(HaveOccurred())
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
 			targetURL := "https://my.gotify.tld/message?token=Aaa.bbb.ccc.ddd"
 			httpmock.RegisterResponder("POST", targetURL, testutils.JSONRespondMust(200, messageResponse{}))
 
 			err = service.Send("Message", nil)
-			Expect(err).NotTo(HaveOccurred())
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
-		It("should not panic if an error occurs when sending the payload", func() {
+		ginkgo.It("should not panic if an error occurs when sending the payload", func() {
 			serviceURL, _ := url.Parse("gotify://my.gotify.tld/Aaa.bbb.ccc.ddd")
 			err = service.Initialize(serviceURL, logger)
 			httpmock.ActivateNonDefault(service.GetHTTPClient())
-			Expect(err).NotTo(HaveOccurred())
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
 			targetURL := "https://my.gotify.tld/message?token=Aaa.bbb.ccc.ddd"
 			httpmock.RegisterResponder("POST", targetURL, testutils.JSONRespondMust(401, errorResponse{
@@ -159,7 +158,7 @@ var _ = Describe("the Gotify plugin URL building and token validation functions"
 			}))
 
 			err = service.Send("Message", nil)
-			Expect(err).To(HaveOccurred())
+			gomega.Expect(err).To(gomega.HaveOccurred())
 		})
 	})
 })

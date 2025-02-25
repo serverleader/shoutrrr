@@ -1,0 +1,29 @@
+name: Run tests and upload coverage
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
+
+      - name: Set up Go
+        uses: actions/setup-go@5a083d0e9a84784eb32078397cf5459adecb4c40
+        with:
+          go-version: "1.24.0"
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: |
+          go test -v -coverprofile coverage.out -covermode atomic ./...
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@1fecca8ce3a22284e70b371077fb5219f54095b8
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

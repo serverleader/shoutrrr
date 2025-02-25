@@ -1,0 +1,39 @@
+name: Publish Docs
+
+on:
+  workflow_run:
+    workflows: ["Release (Production)"]
+    branches: [main]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
+
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Setup Python
+        uses: actions/setup-python@6ca8e8598faa206f7140a65ba31b899bebe16f58
+        with:
+          python-version: "3.13.2"
+          cache: "pip"
+          cache-dependency-path: |
+            docs-requirements.txt
+
+      - name: Install mkdocs
+        run: |
+          pip install -r docs-requirements.txt
+
+      - name: Build and Deploy
+        run: mkdocs gh-deploy --force --verbose

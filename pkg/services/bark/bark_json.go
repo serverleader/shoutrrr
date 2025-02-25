@@ -1,6 +1,6 @@
 package bark
 
-// PushPayload is the notification payload for the bark notification service
+// PushPayload is the notification payload for the bark notification service.
 type PushPayload struct {
 	Body      string `json:"body"`
 	DeviceKey string `json:"device_key"`

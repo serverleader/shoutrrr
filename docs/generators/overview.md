@@ -6,5 +6,5 @@ The main generator is the reflection based [Basic generator](./basic) that aims 
 ## Usage
 
 ```bash
-$ shoutrrr generate [OPTIONS] -g <GENERATOR> <SERVICE>
+shoutrrr generate [OPTIONS] -g <GENERATOR> <SERVICE>
 ```

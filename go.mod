@@ -1,6 +1,6 @@
-module github.com/containrrr/shoutrrr
+module github.com/nicholas-fedor/shoutrrr
 
-go 1.18
+go 1.24
 
 require (
 	github.com/fatih/color v1.15.0

@@ -1,8 +1,8 @@
 package telegram
 
 import (
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/format"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
 type parseMode int
@@ -15,7 +15,7 @@ type parseModeVals struct {
 	Enum       types.EnumFormatter
 }
 
-// ParseModes is an enum helper for parseMode
+// ParseModes is an enum helper for parseMode.
 var ParseModes = &parseModeVals{
 	None:       0,
 	Markdown:   1,

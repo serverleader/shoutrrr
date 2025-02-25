@@ -5,12 +5,14 @@ Examples of service URLs that can be used with [the generic service](../../servi
 ## Home Assistant
 
 The service URL needs to be:
-```
+
+```console
 generic://HAIPAddress:HAPort/api/webhook/WebhookIDFromHA?template=json
 ```
 
 And, if you need http://
-```
+
+```console
 generic://HAIPAddress:HAPort/api/webhook/WebhookIDFromHA?template=json&disabletls=yes
 ```
 

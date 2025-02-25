@@ -5,7 +5,7 @@
 Your Discord Webhook-URL will look like this:
 
 !!! info ""
-    https://discord.com/api/webhooks/__`webhookid`__/__`token`__  
+    <https://discord.com/api/webhooks/__`webhookid`__/__`token`>__  
 
 The shoutrrr service URL should look like this:  
 
@@ -32,7 +32,8 @@ The shoutrrr service URL should look like this:
 ![Screenshot 5](discord/sc-5.png)
 
 6. Format the service URL:
-```
+
+```console
 https://discord.com/api/webhooks/693853386302554172/W3dE2OZz4C13_4z_uHfDOoC7BqTW288s-z1ykqI0iJnY_HjRqMGO8Sc7YDqvf_KVKjhJ
                                  └────────────────┘ └──────────────────────────────────────────────────────────────────┘
                                      webhook id                                    token
