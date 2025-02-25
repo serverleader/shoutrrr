@@ -1,5 +1,6 @@
+version: 2
 builds:
-  - main: ./main.go
+  - main: ./shoutrrr/main.go
     binary: shoutrrr
     goos:
       - linux
