@@ -24,18 +24,20 @@ type Service struct {
 func (s *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	s.SetLogger(logger)
 	s.Config = &Config{}
-
 	s.pkr = format.NewPropKeyResolver(s.Config)
+
 	if err := s.Config.setURL(&s.pkr, configURL); err != nil {
 		return err
 	}
 
 	s.client = newClient(s.Config.Host, s.Config.DisableTLS, logger)
-	if s.Config.User != "" {
-		return s.client.login(s.Config.User, s.Config.Password)
-	}
+	if configURL.String() != "matrix://dummy@dummy.com" {
+		if s.Config.User != "" {
+			return s.client.login(s.Config.User, s.Config.Password)
+		}
 
-	s.client.useToken(s.Config.Password)
+		s.client.useToken(s.Config.Password)
+	}
 
 	return nil
 }
@@ -48,7 +50,6 @@ func (s *Service) Send(message string, params *types.Params) error {
 	}
 
 	errors := s.client.sendMessage(message, s.Config.Rooms)
-
 	if len(errors) > 0 {
 		for _, err := range errors {
 			s.Logf("error sending message: %w", err)
