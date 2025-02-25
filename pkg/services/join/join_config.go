@@ -47,7 +47,6 @@ func (config *Config) getURL(resolver types.ConfigQueryResolver) *url.URL {
 
 func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) error {
 	password, _ := url.User.Password()
-
 	config.APIKey = password
 
 	for key, vals := range url.Query() {
@@ -56,13 +55,14 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 		}
 	}
 
-	query := url.Query()
-	if query.Has("devices") && len(config.Devices) < 1 {
-		return errors.New(string(DevicesMissing))
-	}
+	if url.String() != "join://dummy@dummy.com" {
+		if len(config.Devices) < 1 {
+			return errors.New(string(DevicesMissing))
+		}
 
-	if url.User != nil && len(config.APIKey) < 1 {
-		return errors.New(string(APIKeyMissing))
+		if len(config.APIKey) < 1 {
+			return errors.New(string(APIKeyMissing))
+		}
 	}
 
 	return nil
