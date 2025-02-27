@@ -27,7 +27,7 @@ type Service struct {
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 	service.Config = &Config{
-		UseMessageAsValue: 2,
+		UseMessageAsValue: DefaultMessageValue,
 	}
 	service.pkr = format.NewPropKeyResolver(service.Config)
 
