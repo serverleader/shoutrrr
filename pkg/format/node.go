@@ -35,6 +35,12 @@ const (
 	ContainerToken
 )
 
+// Constants for number bases.
+const (
+	BaseDecimalLen = 10
+	BaseHexLen     = 16
+)
+
 // Node is the generic config tree item.
 type Node interface {
 	Field() *FieldInfo
@@ -129,7 +135,7 @@ func sortNodeItems(nodeItems []Node) {
 func (n *ContainerNode) updateMapNode(mapValue reflect.Value) {
 	base := n.FieldInfo.Base
 	if base == 0 {
-		base = 10
+		base = BaseDecimalLen
 	}
 
 	elemType := mapValue.Type().Elem()
@@ -240,7 +246,7 @@ func getValueNodeValue(fieldValue reflect.Value, fieldInfo *FieldInfo) (string, 
 
 	base := fieldInfo.Base
 	if base == 0 {
-		base = 10
+		base = BaseDecimalLen
 	}
 
 	if fieldInfo.IsEnum() {
@@ -250,7 +256,7 @@ func getValueNodeValue(fieldValue reflect.Value, fieldInfo *FieldInfo) (string, 
 	switch kind {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		val := strconv.FormatUint(fieldValue.Uint(), base)
-		if base == 16 {
+		if base == BaseHexLen {
 			val = "0x" + val
 		}
 
@@ -321,7 +327,7 @@ func getContainerValueString(fieldValue reflect.Value, fieldInfo *FieldInfo) str
 			}
 
 			if itemFieldInfo.Base == 0 {
-				itemFieldInfo.Base = 10
+				itemFieldInfo.Base = BaseDecimalLen
 			}
 		}
 
