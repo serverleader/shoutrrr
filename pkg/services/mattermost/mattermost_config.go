@@ -72,6 +72,7 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, serviceURL *url
 	if len(path) >= 1 && path[0] != "" {
 		config.Token = path[0]
 	}
+
 	if len(path) > 1 && path[1] != "" {
 		config.Channel = path[1]
 	}
