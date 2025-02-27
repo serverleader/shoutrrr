@@ -7,6 +7,13 @@ import (
 
 type encMethod int
 
+const (
+	EncNone        encMethod = iota // 0
+	EncExplicitTLS                  // 1
+	EncImplicitTLS                  // 2
+	EncAuto                         // 3
+)
+
 type encMethodVals struct {
 	// None means no encryption
 	None encMethod
@@ -23,10 +30,10 @@ type encMethodVals struct {
 
 // EncMethods is the enum helper for populating the Encryption field.
 var EncMethods = &encMethodVals{
-	None:        0,
-	ExplicitTLS: 1,
-	ImplicitTLS: 2,
-	Auto:        3,
+	None:        EncNone,
+	ExplicitTLS: EncExplicitTLS,
+	ImplicitTLS: EncImplicitTLS,
+	Auto:        EncAuto,
 
 	Enum: format.CreateEnumFormatter(
 		[]string{
