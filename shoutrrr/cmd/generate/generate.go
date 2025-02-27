@@ -60,7 +60,7 @@ func Run(cmd *cobra.Command, _ []string) {
 
 	for _, prop := range propertyFlags {
 		parts := strings.Split(prop, "=")
-		if len(parts) != 2 {
+		if len(parts) != MaximumNArgs {
 			_, _ = fmt.Fprintln(color.Output, "Invalid property key/value pair:", color.HiYellowString(prop))
 
 			continue
