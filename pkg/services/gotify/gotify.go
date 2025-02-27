@@ -49,6 +49,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return err
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 const tokenChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_"
 
 // The validation rules have been taken directly from the Gotify source code.

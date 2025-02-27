@@ -51,6 +51,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return nil
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 func (service *Service) sendMessageForChatIDs(message string, config *Config) error {
 	for _, chat := range service.Config.Chats {
 		if err := sendMessageToAPI(message, chat, config); err != nil {

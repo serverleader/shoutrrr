@@ -29,6 +29,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return nil
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 // Send a notification message to Rocket.chat.
 func (service *Service) Send(message string, params *types.Params) error {
 	var res *http.Response

@@ -114,9 +114,7 @@ func (router *ServiceRouter) SendAsync(message string, params *types.Params) cha
 func sendToService(service types.Service, results chan error, timeout time.Duration, message string, params types.Params) {
 	result := make(chan error)
 
-	// TODO: There really ought to be a better way to name the services
-	pkg := reflect.TypeOf(service).Elem().PkgPath()
-	serviceName := pkg[strings.LastIndex(pkg, "/")+1:]
+	serviceID := service.GetID()
 
 	go func() { result <- service.Send(message, &params) }()
 
@@ -124,7 +122,7 @@ func sendToService(service types.Service, results chan error, timeout time.Durat
 	case res := <-result:
 		results <- res
 	case <-time.After(timeout):
-		results <- fmt.Errorf("failed to send using %v: timed out", serviceName)
+		results <- fmt.Errorf("failed to send using %v: timed out", serviceID)
 	}
 }
 

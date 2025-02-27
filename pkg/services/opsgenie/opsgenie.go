@@ -70,6 +70,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return service.Config.setURL(&service.pkr, configURL)
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 // Send a notification message to OpsGenie
 // See: https://docs.opsgenie.com/docs/alert-api#create-alert
 func (service *Service) Send(message string, params *types.Params) error {

@@ -57,6 +57,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return service.Config.setURL(&service.pkr, configURL)
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 // GetConfigURLFromCustom creates a regular service URL from one with a custom host.
 func (*Service) GetConfigURLFromCustom(customURL *url.URL) (serviceURL *url.URL, err error) {
 	webhookURL := *customURL

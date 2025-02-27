@@ -44,6 +44,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return service.Config.setURL(&service.pkr, configURL) // Update reference
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 func (service *Service) sendAPI(config *Config, message string) error {
 	response := apiResponse{}
 	request := PushPayload{
