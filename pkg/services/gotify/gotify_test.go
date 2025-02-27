@@ -12,6 +12,10 @@ import (
 	"github.com/onsi/gomega"
 )
 
+const (
+	TARGET_URL = "https://my.gotify.tld/message?token=Aaa.bbb.ccc.ddd"
+)
+
 func TestGotify(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
 	ginkgo.RunSpecs(t, "Shoutrrr Gotify Suite")
@@ -27,8 +31,7 @@ var _ = ginkgo.Describe("the Gotify plugin URL building and token validation fun
 		}
 		url, err := buildURL(&config)
 		gomega.Expect(err).To(gomega.BeNil())
-		expectedURL := "https://my.gotify.tld/message?token=Aaa.bbb.ccc.ddd"
-		gomega.Expect(url).To(gomega.Equal(expectedURL))
+		gomega.Expect(url).To(gomega.Equal(TARGET_URL))
 	})
 
 	ginkgo.When("TLS is disabled", func() {
@@ -138,8 +141,7 @@ var _ = ginkgo.Describe("the Gotify plugin URL building and token validation fun
 			httpmock.ActivateNonDefault(service.GetHTTPClient())
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
-			targetURL := "https://my.gotify.tld/message?token=Aaa.bbb.ccc.ddd"
-			httpmock.RegisterResponder("POST", targetURL, testutils.JSONRespondMust(200, messageResponse{}))
+			httpmock.RegisterResponder("POST", TARGET_URL, testutils.JSONRespondMust(200, messageResponse{}))
 
 			err = service.Send("Message", nil)
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
@@ -150,8 +152,7 @@ var _ = ginkgo.Describe("the Gotify plugin URL building and token validation fun
 			httpmock.ActivateNonDefault(service.GetHTTPClient())
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
-			targetURL := "https://my.gotify.tld/message?token=Aaa.bbb.ccc.ddd"
-			httpmock.RegisterResponder("POST", targetURL, testutils.JSONRespondMust(401, errorResponse{
+			httpmock.RegisterResponder("POST", TARGET_URL, testutils.JSONRespondMust(401, errorResponse{
 				Name:        "Unauthorized",
 				Code:        401,
 				Description: "you need to provide a valid access token or user credentials to access this api",

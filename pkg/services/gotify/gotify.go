@@ -14,6 +14,12 @@ import (
 	"github.com/nicholas-fedor/shoutrrr/pkg/util/jsonclient"
 )
 
+// Constants for magic numbers.
+const (
+	HTTP_TIMEOUT_SECONDS = 10
+	TOKEN_LENGTH         = 15
+)
+
 // Service providing Gotify as a notification service.
 type Service struct {
 	standard.Standard
@@ -41,8 +47,7 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 				InsecureSkipVerify: service.Config.DisableTLS,
 			},
 		},
-		// Set a reasonable timeout to prevent one bad transfer from block all subsequent ones
-		Timeout: 10 * time.Second,
+		Timeout: HTTP_TIMEOUT_SECONDS * time.Second,
 	}
 	service.client = jsonclient.NewWithHTTPClient(service.httpClient)
 
@@ -60,7 +65,7 @@ const tokenChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567
 // These will have to be adapted in case of a change:
 // https://github.com/gotify/server/blob/ad157a138b4985086c484a7aabfc2deada5a33dd/auth/token.go#L8
 func isTokenValid(token string) bool {
-	if len(token) != 15 {
+	if len(token) != TOKEN_LENGTH {
 		return false
 	} else if token[0] != 'A' {
 		return false
