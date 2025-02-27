@@ -8,6 +8,10 @@ import (
 	"github.com/nicholas-fedor/shoutrrr/pkg/util"
 )
 
+const (
+	MaxEmbeds = 9
+)
+
 // WebhookPayload is the webhook endpoint payload.
 type WebhookPayload struct {
 	Embeds    []embedItem `json:"embeds"`
@@ -36,7 +40,7 @@ func CreatePayloadFromItems(items []types.MessageItem, title string, colors [typ
 		return WebhookPayload{}, fmt.Errorf("message is empty")
 	}
 
-	itemCount := util.Min(9, len(items))
+	itemCount := util.Min(MaxEmbeds, len(items))
 
 	embeds := make([]embedItem, 0, itemCount)
 
