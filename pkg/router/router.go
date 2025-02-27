@@ -127,7 +127,7 @@ func sendToService(service types.Service, results chan error, timeout time.Durat
 }
 
 // Enqueue adds the message to an internal queue and sends it when Flush is invoked.
-func (router *ServiceRouter) Enqueue(message string, v ...interface{}) {
+func (router *ServiceRouter) Enqueue(message string, v ...any) {
 	if len(v) > 0 {
 		message = fmt.Sprintf(message, v...)
 	}
@@ -248,7 +248,7 @@ func (router *ServiceRouter) Locate(rawURL string) (types.Service, error) {
 	return service, err
 }
 
-func (router *ServiceRouter) log(v ...interface{}) {
+func (router *ServiceRouter) log(v ...any) {
 	if router.logger == nil {
 		return
 	}

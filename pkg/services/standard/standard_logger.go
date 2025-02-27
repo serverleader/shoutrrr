@@ -11,12 +11,12 @@ type Logger struct {
 }
 
 // Logf maps to the service loggers Logger.Printf function.
-func (sl *Logger) Logf(format string, v ...interface{}) {
+func (sl *Logger) Logf(format string, v ...any) {
 	sl.logger.Printf(format, v...)
 }
 
 // Log maps to the service loggers Logger.Print function.
-func (sl *Logger) Log(v ...interface{}) {
+func (sl *Logger) Log(v ...any) {
 	sl.logger.Print(v...)
 }
 

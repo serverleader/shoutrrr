@@ -257,7 +257,7 @@ func (c *client) updateAccessToken() {
 	c.apiURL.RawQuery = query.Encode()
 }
 
-func (c *client) logf(format string, v ...interface{}) {
+func (c *client) logf(format string, v ...any) {
 	c.logger.Printf(format, v...)
 }
 

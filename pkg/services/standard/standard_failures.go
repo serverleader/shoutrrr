@@ -18,7 +18,7 @@ const (
 )
 
 // Failure creates a Failure instance corresponding to the provided failureID, wrapping the provided error.
-func Failure(failureID failures.FailureID, err error, v ...interface{}) failures.Failure {
+func Failure(failureID failures.FailureID, err error, v ...any) failures.Failure {
 	messages := map[int]string{
 		int(FailTestSetup): "test setup failed",
 		int(FailParseURL):  "error parsing Service URL",

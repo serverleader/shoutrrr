@@ -25,7 +25,7 @@ var (
 	userInMono io.Writer
 )
 
-func mockTyped(a ...interface{}) {
+func mockTyped(a ...any) {
 	_, _ = fmt.Fprint(userOut, a...)
 	_, _ = fmt.Fprint(userOut, "\n")
 }

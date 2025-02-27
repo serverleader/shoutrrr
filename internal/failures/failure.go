@@ -40,7 +40,7 @@ func (f *failure) Is(target error) bool {
 }
 
 // Wrap returns a failure with the given message and id, saving the message of wrappedError for appending to Error().
-func Wrap(message string, id FailureID, wrappedError error, v ...interface{}) Failure {
+func Wrap(message string, id FailureID, wrappedError error, v ...any) Failure {
 	if len(v) > 0 {
 		message = fmt.Sprintf(message, v...)
 	}

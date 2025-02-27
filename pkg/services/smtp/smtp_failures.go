@@ -47,7 +47,7 @@ const (
 	FailHandshake
 )
 
-func fail(failureID failures.FailureID, err error, v ...interface{}) failure {
+func fail(failureID failures.FailureID, err error, v ...any) failure {
 	var msg string
 
 	switch failureID {
