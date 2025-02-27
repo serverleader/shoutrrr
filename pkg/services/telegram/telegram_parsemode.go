@@ -7,6 +7,13 @@ import (
 
 type parseMode int
 
+const (
+	ParseModeNone       parseMode = iota // 0
+	ParseModeMarkdown                    // 1
+	ParseModeHTML                        // 2
+	ParseModeMarkdownV2                  // 3
+)
+
 type parseModeVals struct {
 	None       parseMode
 	Markdown   parseMode
@@ -17,10 +24,10 @@ type parseModeVals struct {
 
 // ParseModes is an enum helper for parseMode.
 var ParseModes = &parseModeVals{
-	None:       0,
-	Markdown:   1,
-	HTML:       2,
-	MarkdownV2: 3,
+	None:       ParseModeNone,
+	Markdown:   ParseModeMarkdown,
+	HTML:       ParseModeHTML,
+	MarkdownV2: ParseModeMarkdownV2,
 	Enum: format.CreateEnumFormatter(
 		[]string{
 			"None",

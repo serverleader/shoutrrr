@@ -26,6 +26,12 @@ type Generator struct {
 	Writer    io.Writer
 }
 
+// Constants for GetUpdates parameters.
+const (
+	UpdatesLimit   = 10  // Number of updates to retrieve per call
+	UpdatesTimeout = 120 // Timeout in seconds for long polling
+)
+
 // Generate a telegram Shoutrrr configuration from a user dialog.
 func (g *Generator) Generate(_ types.Service, props map[string]string, _ []string) (types.ServiceConfig, error) {
 	var config Config
@@ -73,7 +79,7 @@ func (g *Generator) Generate(_ types.Service, props map[string]string, _ []strin
 	for !g.done {
 		ud.Writeln("Waiting for messages to arrive...")
 
-		updates, err := g.client.GetUpdates(lastUpdate, 10, 120, nil)
+		updates, err := g.client.GetUpdates(lastUpdate, UpdatesLimit, UpdatesTimeout, nil)
 		if err != nil {
 			panic(err)
 		}
