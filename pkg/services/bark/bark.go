@@ -50,7 +50,7 @@ func (service *Service) GetID() string {
 }
 
 func (service *Service) sendAPI(config *Config, message string) error {
-	response := apiResponse{}
+	response := APIResponse{}
 	request := PushPayload{
 		Body:      message,
 		DeviceKey: config.DeviceKey,

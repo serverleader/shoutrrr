@@ -85,7 +85,7 @@ func (*Service) GetConfigURLFromCustom(customURL *url.URL) (serviceURL *url.URL,
 func (service *Service) doSend(config *Config, params types.Params) error {
 	postURL := config.WebhookURL().String()
 
-	payload, err := service.getPayload(config, params)
+	payload, err := service.GetPayload(config, params)
 	if err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func (service *Service) doSend(config *Config, params types.Params) error {
 	return err
 }
 
-func (service *Service) getPayload(config *Config, params types.Params) (io.Reader, error) {
+func (service *Service) GetPayload(config *Config, params types.Params) (io.Reader, error) {
 	switch config.Template {
 	case "":
 		return bytes.NewBufferString(params[config.MessageKey]), nil

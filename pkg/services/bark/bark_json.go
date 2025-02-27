@@ -14,12 +14,12 @@ type PushPayload struct {
 	Copy      string `json:"copy,omitempty"`
 }
 
-type apiResponse struct {
+type APIResponse struct {
 	Code      int64  `json:"code"`
 	Message   string `json:"message"`
 	Timestamp int64  `json:"timestamp"`
 }
 
-func (e *apiResponse) Error() string {
+func (e *APIResponse) Error() string {
 	return "server response: " + e.Message
 }
