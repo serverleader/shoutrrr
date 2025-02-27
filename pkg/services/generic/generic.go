@@ -14,6 +14,11 @@ import (
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
+// Constants for the generic service.
+const (
+	JSONTemplate = "JSON" // Template identifier for JSON format
+)
+
 // Service providing a generic notification service.
 type Service struct {
 	standard.Standard
@@ -117,7 +122,7 @@ func (service *Service) getPayload(config *Config, params types.Params) (io.Read
 	switch config.Template {
 	case "":
 		return bytes.NewBufferString(params[config.MessageKey]), nil
-	case "json", "JSON":
+	case "json", JSONTemplate:
 		for key, value := range config.extraData {
 			params[key] = value
 		}
