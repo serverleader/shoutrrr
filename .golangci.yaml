@@ -3,8 +3,14 @@ linters:
   disable-all: false
   fast: true
   disable:
-    - gci
+    - cyclop
     - depguard
+    - funlen
+    - gci
+    - gocognit
+    - lll
+    - nestif
+    - testpackage
 
 linters-settings:
   gci:
@@ -18,7 +24,6 @@ linters-settings:
       - default
   gofmt:
     simplify: true
-
 
 output:
   print-issued-lines: true
