@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -305,7 +306,7 @@ var _ = ginkgo.Describe("the OpsGenie Config struct", func() {
 
 	ginkgo.When("generating a config from a url with port", func() {
 		ginkgo.It("should populate the port field", func() {
-			url, err := url.Parse(fmt.Sprintf("opsgenie://%s:12345/%s", mockHost, mockAPIKey))
+			url, err := url.Parse(fmt.Sprintf("opsgenie://%s/%s", net.JoinHostPort(mockHost, "12345"), mockAPIKey))
 			gomega.Expect(err).To(gomega.BeNil())
 
 			config := Config{}
@@ -319,7 +320,7 @@ var _ = ginkgo.Describe("the OpsGenie Config struct", func() {
 	ginkgo.When("generating a config from a url with query parameters", func() {
 		ginkgo.It("should populate the config fields with the query parameter values", func() {
 			queryParams := `alias=Life+is+too+short+for+no+alias&description=Every+alert+needs+a+description&actions=An+action&tags=tag1,tag2&details=key:value,key2:value2&entity=An+example+entity&source=The+source&priority=P1&user=Dracula&note=Here+is+a+note&responders=user:Test,team:NOC&visibleTo=user:A+User`
-			url, err := url.Parse(fmt.Sprintf("opsgenie://%s:12345/%s?%s", mockHost, mockAPIKey, queryParams))
+			url, err := url.Parse(fmt.Sprintf("opsgenie://%s/%s?%s", net.JoinHostPort(mockHost, "12345"), mockAPIKey, queryParams))
 			gomega.Expect(err).To(gomega.BeNil())
 
 			config := Config{}
@@ -350,7 +351,7 @@ var _ = ginkgo.Describe("the OpsGenie Config struct", func() {
 		ginkgo.It("should parse the escaped spaces correctly", func() {
 			// Use: '%20', '+' and a normal space
 			queryParams := `alias=Life is+too%20short+for+no+alias`
-			url, err := url.Parse(fmt.Sprintf("opsgenie://%s:12345/%s?%s", mockHost, mockAPIKey, queryParams))
+			url, err := url.Parse(fmt.Sprintf("opsgenie://%s/%s?%s", net.JoinHostPort(mockHost, "12345"), mockAPIKey, queryParams))
 			gomega.Expect(err).To(gomega.BeNil())
 
 			config := Config{}
