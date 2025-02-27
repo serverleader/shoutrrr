@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 
@@ -46,7 +47,7 @@ func (service *Service) Send(message string, params *types.Params) error {
 
 	res, err = http.Post(apiURL, "application/json", bytes.NewReader(json))
 	if err != nil {
-		return fmt.Errorf("Error while posting to URL: %w\nHOST: %s\nPORT: %s", err, config.Host, config.Port)
+		return fmt.Errorf("error while posting to URL: %w\nHOST: %s\nPORT: %s", err, config.Host, config.Port)
 	}
 
 	defer res.Body.Close()
@@ -61,9 +62,10 @@ func (service *Service) Send(message string, params *types.Params) error {
 }
 
 func buildURL(config *Config) string {
+	base := config.Host
 	if config.Port != "" {
-		return fmt.Sprintf("https://%s:%s/hooks/%s/%s", config.Host, config.Port, config.TokenA, config.TokenB)
+		base = net.JoinHostPort(config.Host, config.Port)
 	}
 
-	return fmt.Sprintf("https://%s/hooks/%s/%s", config.Host, config.TokenA, config.TokenB)
+	return fmt.Sprintf("https://%s/hooks/%s/%s", base, config.TokenA, config.TokenB)
 }
