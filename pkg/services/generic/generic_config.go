@@ -5,7 +5,7 @@ import (
 
 	"github.com/nicholas-fedor/shoutrrr/pkg/format"
 	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
-	t "github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
 // Config for use within the generic service.
@@ -36,12 +36,29 @@ func DefaultConfig() (*Config, format.PropKeyResolver) {
 func ConfigFromWebhookURL(webhookURL url.URL) (*Config, format.PropKeyResolver, error) {
 	config, pkr := DefaultConfig()
 
+	// Process webhook URL query parameters, preserving custom params
+	webhookQuery := webhookURL.Query()
+	// First strip custom headers and extra data
+	headers, extraData := stripCustomQueryValues(webhookQuery)
+	// Then process remaining query parameters as potential escaped config params
+	escapedQuery := url.Values{}
+
+	for key, values := range webhookQuery {
+		if len(values) > 0 {
+			escapedQuery.Set(format.EscapeKey(key), values[0])
+		}
+	}
+	// Apply escaped config parameters
+	_, err := format.SetConfigPropsFromQuery(&pkr, escapedQuery)
+	if err != nil {
+		return nil, pkr, err
+	}
+
+	// Restore original query parameters for the webhook URL
+	webhookURL.RawQuery = webhookQuery.Encode()
 	config.webhookURL = &webhookURL
-	// TODO: Decide what to do with custom URL queries. Right now they are passed
-	//       to the inner url.URL and not processed by PKR.
-	// customQuery, err := format.SetConfigPropsFromQuery(&pkr, webhookURL.Query())
-	// goland:noinspection GoNilness: SetConfigPropsFromQuery always return non-nil
-	// config.webhookURL.RawQuery = customQuery.Encode()
+	config.headers = headers
+	config.extraData = extraData
 	config.DisableTLS = webhookURL.Scheme == "http"
 
 	return config, pkr, nil
@@ -73,7 +90,7 @@ func (config *Config) SetURL(serviceURL *url.URL) error {
 	return config.setURL(&resolver, serviceURL)
 }
 
-func (config *Config) getURL(resolver t.ConfigQueryResolver) *url.URL {
+func (config *Config) getURL(resolver types.ConfigQueryResolver) *url.URL {
 	serviceURL := *config.webhookURL
 	webhookQuery := config.webhookURL.Query()
 	serviceQuery := format.BuildQueryWithCustomFields(resolver, webhookQuery)
@@ -84,7 +101,7 @@ func (config *Config) getURL(resolver t.ConfigQueryResolver) *url.URL {
 	return &serviceURL
 }
 
-func (config *Config) setURL(resolver t.ConfigQueryResolver, serviceURL *url.URL) error {
+func (config *Config) setURL(resolver types.ConfigQueryResolver, serviceURL *url.URL) error {
 	webhookURL := *serviceURL
 	serviceQuery := serviceURL.Query()
 	headers, extraData := stripCustomQueryValues(serviceQuery)
