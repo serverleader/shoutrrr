@@ -84,7 +84,8 @@ var _ = ginkgo.Describe("the rocketchat service", func() {
 			client = &http.Client{
 				Transport: &http.Transport{
 					TLSClientConfig: &tls.Config{
-						RootCAs: certPool,
+						RootCAs:    certPool,
+						MinVersion: tls.VersionTLS12, // Explicitly set minimum TLS version to 1.2
 					},
 				},
 			}
