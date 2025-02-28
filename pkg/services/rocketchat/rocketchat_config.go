@@ -31,8 +31,13 @@ const (
 
 // GetURL returns a URL representation of its current field values.
 func (config *Config) GetURL() *url.URL {
+	host := config.Host
+	if config.Port != "" {
+		host = fmt.Sprintf("%s:%s", config.Host, config.Port)
+	}
+
 	u := &url.URL{
-		Host:       fmt.Sprintf("%s:%v", config.Host, config.Port),
+		Host:       host,
 		Path:       fmt.Sprintf("%s/%s", config.TokenA, config.TokenB),
 		Scheme:     Scheme,
 		ForceQuery: false,
