@@ -15,6 +15,7 @@ type Config struct {
 func (config *Config) GetURL() *url.URL {
 	return &url.URL{
 		Scheme: Scheme,
+		Opaque: "//", // Ensures "logger://" output
 	}
 }
 
