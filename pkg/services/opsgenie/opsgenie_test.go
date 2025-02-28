@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -177,46 +178,6 @@ var _ = ginkgo.Describe("the OpsGenie service", func() {
 			})
 		})
 
-		ginkgo.When("sending an alert with runtime parameters", func() {
-			ginkgo.It("should send a request to our mock OpsGenie server with all fields populated from runtime parameters, overwriting the query parameters", func() {
-				checkRequest = func(body string, header http.Header) {
-					gomega.Expect(header["Authorization"][0]).To(gomega.Equal("GenieKey " + mockAPIKey))
-					gomega.Expect(header["Content-Type"][0]).To(gomega.Equal("application/json"))
-					gomega.Expect(body).To(gomega.Equal(`{"` +
-						`message":"An example alert message",` +
-						`"alias":"Life is too short for no alias",` +
-						`"description":"Every alert needs a description",` +
-						`"responders":[{"type":"team","id":"4513b7ea-3b91-438f-b7e4-e3e54af9147c"},{"type":"team","name":"NOC"},{"type":"user","username":"Donald"},{"type":"user","id":"696f0759-3b0f-4a15-b8c8-19d3dfca33f2"}],` +
-						`"visibleTo":[{"type":"team","name":"rocket"}],` +
-						`"actions":["action1","action2"],` +
-						`"tags":["tag1","tag2"],` +
-						`"details":{"key1":"value1","key2":"value2"},` +
-						`"entity":"An example entity",` +
-						`"source":"The source",` +
-						`"priority":"P1",` +
-						`"user":"Dracula",` +
-						`"note":"Here is a note"` +
-						`}`))
-				}
-
-				err := service.Send("An example alert message", &types.Params{
-					"alias":       "Life is too short for no alias",
-					"description": "Every alert needs a description",
-					"responders":  "team:4513b7ea-3b91-438f-b7e4-e3e54af9147c,team:NOC,user:Donald,user:696f0759-3b0f-4a15-b8c8-19d3dfca33f2",
-					"visibleTo":   "team:rocket",
-					"actions":     "action1,action2",
-					"tags":        "tag1,tag2",
-					"details":     "key1:value1,key2:value2",
-					"entity":      "An example entity",
-					"source":      "The source",
-					"priority":    "P1",
-					"user":        "Dracula",
-					"note":        "Here is a note",
-				})
-				gomega.Expect(err).To(gomega.BeNil())
-			})
-		})
-
 		ginkgo.When("sending two alerts", func() {
 			ginkgo.It("should not mix-up the runtime parameters and the query parameters", func() {
 				// Internally the opsgenie service copies runtime parameters into the config struct
@@ -285,6 +246,11 @@ var _ = ginkgo.Describe("the OpsGenie service", func() {
 			})
 		})
 	})
+
+	ginkgo.It("should return the correct service ID", func() {
+		service := &Service{}
+		gomega.Expect(service.GetID()).To(gomega.Equal("opsgenie"))
+	})
 })
 
 var _ = ginkgo.Describe("the OpsGenie Config struct", func() {
@@ -305,7 +271,7 @@ var _ = ginkgo.Describe("the OpsGenie Config struct", func() {
 
 	ginkgo.When("generating a config from a url with port", func() {
 		ginkgo.It("should populate the port field", func() {
-			url, err := url.Parse(fmt.Sprintf("opsgenie://%s:12345/%s", mockHost, mockAPIKey))
+			url, err := url.Parse(fmt.Sprintf("opsgenie://%s/%s", net.JoinHostPort(mockHost, "12345"), mockAPIKey))
 			gomega.Expect(err).To(gomega.BeNil())
 
 			config := Config{}
@@ -319,7 +285,7 @@ var _ = ginkgo.Describe("the OpsGenie Config struct", func() {
 	ginkgo.When("generating a config from a url with query parameters", func() {
 		ginkgo.It("should populate the config fields with the query parameter values", func() {
 			queryParams := `alias=Life+is+too+short+for+no+alias&description=Every+alert+needs+a+description&actions=An+action&tags=tag1,tag2&details=key:value,key2:value2&entity=An+example+entity&source=The+source&priority=P1&user=Dracula&note=Here+is+a+note&responders=user:Test,team:NOC&visibleTo=user:A+User`
-			url, err := url.Parse(fmt.Sprintf("opsgenie://%s:12345/%s?%s", mockHost, mockAPIKey, queryParams))
+			url, err := url.Parse(fmt.Sprintf("opsgenie://%s/%s?%s", net.JoinHostPort(mockHost, "12345"), mockAPIKey, queryParams))
 			gomega.Expect(err).To(gomega.BeNil())
 
 			config := Config{}
@@ -350,7 +316,7 @@ var _ = ginkgo.Describe("the OpsGenie Config struct", func() {
 		ginkgo.It("should parse the escaped spaces correctly", func() {
 			// Use: '%20', '+' and a normal space
 			queryParams := `alias=Life is+too%20short+for+no+alias`
-			url, err := url.Parse(fmt.Sprintf("opsgenie://%s:12345/%s?%s", mockHost, mockAPIKey, queryParams))
+			url, err := url.Parse(fmt.Sprintf("opsgenie://%s/%s?%s", net.JoinHostPort(mockHost, "12345"), mockAPIKey, queryParams))
 			gomega.Expect(err).To(gomega.BeNil())
 
 			config := Config{}

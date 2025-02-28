@@ -3,26 +3,28 @@ package router
 import (
 	"fmt"
 	"net/url"
-	"reflect"
 	"strings"
 	"time"
 
-	t "github.com/nicholas-fedor/shoutrrr/pkg/types"
+	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
+
+// DefaultTimeout is the default duration for service operation timeouts.
+const DefaultTimeout = 10 * time.Second
 
 // ServiceRouter is responsible for routing a message to a specific notification service using the notification URL.
 type ServiceRouter struct {
-	logger   t.StdLogger
-	services []t.Service
+	logger   types.StdLogger
+	services []types.Service
 	queue    []string
 	Timeout  time.Duration
 }
 
 // New creates a new service router using the specified logger and service URLs.
-func New(logger t.StdLogger, serviceURLs ...string) (*ServiceRouter, error) {
+func New(logger types.StdLogger, serviceURLs ...string) (*ServiceRouter, error) {
 	router := ServiceRouter{
 		logger:  logger,
-		Timeout: 10 * time.Second,
+		Timeout: DefaultTimeout,
 	}
 
 	for _, serviceURL := range serviceURLs {
@@ -45,7 +47,7 @@ func (router *ServiceRouter) AddService(serviceURL string) error {
 }
 
 // Send sends the specified message using the routers underlying services.
-func (router *ServiceRouter) Send(message string, params *t.Params) []error {
+func (router *ServiceRouter) Send(message string, params *types.Params) []error {
 	if router == nil {
 		return []error{fmt.Errorf("error sending message: no senders")}
 	}
@@ -62,7 +64,7 @@ func (router *ServiceRouter) Send(message string, params *t.Params) []error {
 }
 
 // SendItems sends the specified message items using the routers underlying services.
-func (router *ServiceRouter) SendItems(items []t.MessageItem, params t.Params) []error {
+func (router *ServiceRouter) SendItems(items []types.MessageItem, params types.Params) []error {
 	if router == nil {
 		return []error{fmt.Errorf("error sending message: no senders")}
 	}
@@ -85,13 +87,13 @@ func (router *ServiceRouter) SendItems(items []t.MessageItem, params t.Params) [
 }
 
 // SendAsync sends the specified message using the routers underlying services.
-func (router *ServiceRouter) SendAsync(message string, params *t.Params) chan error {
+func (router *ServiceRouter) SendAsync(message string, params *types.Params) chan error {
 	serviceCount := len(router.services)
 	proxy := make(chan error, serviceCount)
 	errors := make(chan error, serviceCount)
 
 	if params == nil {
-		params = &t.Params{}
+		params = &types.Params{}
 	}
 
 	for _, service := range router.services {
@@ -109,12 +111,10 @@ func (router *ServiceRouter) SendAsync(message string, params *t.Params) chan er
 	return errors
 }
 
-func sendToService(service t.Service, results chan error, timeout time.Duration, message string, params t.Params) {
+func sendToService(service types.Service, results chan error, timeout time.Duration, message string, params types.Params) {
 	result := make(chan error)
 
-	// TODO: There really ought to be a better way to name the services
-	pkg := reflect.TypeOf(service).Elem().PkgPath()
-	serviceName := pkg[strings.LastIndex(pkg, "/")+1:]
+	serviceID := service.GetID()
 
 	go func() { result <- service.Send(message, &params) }()
 
@@ -122,12 +122,12 @@ func sendToService(service t.Service, results chan error, timeout time.Duration,
 	case res := <-result:
 		results <- res
 	case <-time.After(timeout):
-		results <- fmt.Errorf("failed to send using %v: timed out", serviceName)
+		results <- fmt.Errorf("failed to send using %v: timed out", serviceID)
 	}
 }
 
 // Enqueue adds the message to an internal queue and sends it when Flush is invoked.
-func (router *ServiceRouter) Enqueue(message string, v ...interface{}) {
+func (router *ServiceRouter) Enqueue(message string, v ...any) {
 	if len(v) > 0 {
 		message = fmt.Sprintf(message, v...)
 	}
@@ -136,14 +136,14 @@ func (router *ServiceRouter) Enqueue(message string, v ...interface{}) {
 }
 
 // Flush sends all messages that have been queued up as a combined message. This method should be deferred!
-func (router *ServiceRouter) Flush(params *t.Params) {
+func (router *ServiceRouter) Flush(params *types.Params) {
 	// Since this method is supposed to be deferred we just have to ignore errors
 	_ = router.Send(strings.Join(router.queue, "\n"), params)
 	router.queue = []string{}
 }
 
 // SetLogger sets the logger that the services will use to write progress logs.
-func (router *ServiceRouter) SetLogger(logger t.StdLogger) {
+func (router *ServiceRouter) SetLogger(logger types.StdLogger) {
 	router.logger = logger
 	for _, service := range router.services {
 		service.SetLogger(logger)
@@ -177,7 +177,7 @@ func (router *ServiceRouter) Route(rawURL string, message string) error {
 	return service.Send(message, nil)
 }
 
-func (router *ServiceRouter) initService(rawURL string) (t.Service, error) {
+func (router *ServiceRouter) initService(rawURL string) (types.Service, error) {
 	scheme, configURL, err := router.ExtractServiceName(rawURL)
 	if err != nil {
 		return nil, err
@@ -191,7 +191,7 @@ func (router *ServiceRouter) initService(rawURL string) (t.Service, error) {
 	if configURL.Scheme != scheme {
 		router.log("Got custom URL:", configURL.String())
 
-		customURLService, ok := service.(t.CustomURLService)
+		customURLService, ok := service.(types.CustomURLService)
 		if !ok {
 			return nil, fmt.Errorf("custom URLs are not supported by '%s' service", scheme)
 		}
@@ -213,12 +213,12 @@ func (router *ServiceRouter) initService(rawURL string) (t.Service, error) {
 }
 
 // NewService returns a new uninitialized service instance.
-func (*ServiceRouter) NewService(serviceScheme string) (t.Service, error) {
+func (*ServiceRouter) NewService(serviceScheme string) (types.Service, error) {
 	return newService(serviceScheme)
 }
 
 // newService returns a new uninitialized service instance.
-func newService(serviceScheme string) (t.Service, error) {
+func newService(serviceScheme string) (types.Service, error) {
 	serviceFactory, valid := serviceMap[strings.ToLower(serviceScheme)]
 	if !valid {
 		return nil, fmt.Errorf("unknown service %q", serviceScheme)
@@ -242,13 +242,13 @@ func (router *ServiceRouter) ListServices() []string {
 }
 
 // Locate returns the service implementation that corresponds to the given service URL.
-func (router *ServiceRouter) Locate(rawURL string) (t.Service, error) {
+func (router *ServiceRouter) Locate(rawURL string) (types.Service, error) {
 	service, err := router.initService(rawURL)
 
 	return service, err
 }
 
-func (router *ServiceRouter) log(v ...interface{}) {
+func (router *ServiceRouter) log(v ...any) {
 	if router.logger == nil {
 		return
 	}

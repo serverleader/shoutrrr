@@ -27,6 +27,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return err
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 // Send a notification message to Google Chat.
 func (service *Service) Send(message string, _ *types.Params) error {
 	config := service.Config

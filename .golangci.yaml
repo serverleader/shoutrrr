@@ -7,6 +7,7 @@ linters:
     - depguard
     - funlen
     - gci
+    - gochecknoinits
     - gocognit
     - lll
     - nestif

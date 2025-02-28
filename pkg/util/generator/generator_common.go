@@ -59,14 +59,14 @@ func NewUserDialog(reader io.Reader, writer io.Writer, props map[string]string) 
 }
 
 // Write message to user.
-func (ud *UserDialog) Write(message string, v ...interface{}) {
+func (ud *UserDialog) Write(message string, v ...any) {
 	if _, err := fmt.Fprintf(ud.writer, message, v...); err != nil {
 		fmt.Printf("failed to write to output: %v", err)
 	}
 }
 
-// Writeln writes a message to the user that completes a line.
-func (ud *UserDialog) Writeln(format string, v ...interface{}) {
+// Writelnf writes a message to the user that completes a line.
+func (ud *UserDialog) Writelnf(format string, v ...any) {
 	ud.Write(format+"\n", v...)
 }
 
@@ -107,12 +107,12 @@ func (ud *UserDialog) QueryString(prompt string, validator func(string) error, k
 		colKey := format.ColorizeProp(key)
 
 		if err == nil {
-			ud.Writeln("Using prop value %v for %v", colAnswer, colKey)
+			ud.Writelnf("Using prop value %v for %v", colAnswer, colKey)
 
 			return answer
 		}
 
-		ud.Writeln("Supplied prop value %v is not valid for %v: %v", colAnswer, colKey, err)
+		ud.Writelnf("Supplied prop value %v is not valid for %v: %v", colAnswer, colKey, err)
 	}
 
 	for {
@@ -121,7 +121,7 @@ func (ud *UserDialog) QueryString(prompt string, validator func(string) error, k
 
 		if !ud.scanner.Scan() {
 			if err := ud.scanner.Err(); err != nil {
-				ud.Writeln(err.Error())
+				ud.Writelnf(err.Error())
 
 				continue
 			}
@@ -135,8 +135,8 @@ func (ud *UserDialog) QueryString(prompt string, validator func(string) error, k
 		color.Unset()
 
 		if err := validator(answer); err != nil {
-			ud.Writeln("%v", err)
-			ud.Writeln("")
+			ud.Writelnf("%v", err)
+			ud.Writelnf("")
 
 			continue
 		}

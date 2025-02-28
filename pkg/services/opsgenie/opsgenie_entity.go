@@ -28,6 +28,7 @@ func (e *Entity) SetFromProp(propValue string) error {
 
 	e.Type = elements[0]
 	identifier := elements[1]
+
 	isID, err := isOpsGenieID(identifier)
 	if err != nil {
 		return fmt.Errorf("invalid entity, cannot parse id/name: %q", identifier)

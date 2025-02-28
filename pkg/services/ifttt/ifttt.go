@@ -27,7 +27,7 @@ type Service struct {
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
 	service.Config = &Config{
-		UseMessageAsValue: 2,
+		UseMessageAsValue: DefaultMessageValue,
 	}
 	service.pkr = format.NewPropKeyResolver(service.Config)
 
@@ -36,6 +36,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	}
 
 	return nil
+}
+
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
 }
 
 // Send a notification message to a IFTTT webhook.

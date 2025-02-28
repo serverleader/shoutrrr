@@ -17,7 +17,10 @@ import (
 	cli "github.com/nicholas-fedor/shoutrrr/shoutrrr/cmd"
 )
 
-const MaximumNArgs = 2
+const (
+	MaximumNArgs     = 2
+	MaxMessageLength = 100
+)
 
 // Cmd sends a notification using a service url.
 var Cmd = &cobra.Command{
@@ -40,7 +43,7 @@ func init() {
 	Cmd.Flags().StringP("title", "t", "", "The title used for services that support it")
 }
 
-func logf(format string, a ...interface{}) {
+func logf(format string, a ...any) {
 	fmt.Fprintf(os.Stderr, format+"\n", a...)
 }
 
@@ -81,7 +84,7 @@ func run(cmd *cobra.Command) error {
 			}
 		}
 
-		logf("Message: %s", util.Ellipsis(message, 100))
+		logf("Message: %s", util.Ellipsis(message, MaxMessageLength))
 
 		if title != "" {
 			logf("Title: %v", title)

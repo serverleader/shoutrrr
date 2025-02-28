@@ -42,6 +42,11 @@ func (s *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	return nil
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 // Send notification.
 func (s *Service) Send(message string, params *types.Params) error {
 	config := *s.Config

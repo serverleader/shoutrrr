@@ -6,6 +6,12 @@ import (
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
+const (
+	ValueFieldOne   = 1 // Represents Value1 field
+	ValueFieldTwo   = 2 // Represents Value2 field
+	ValueFieldThree = 3 // Represents Value3 field
+)
+
 // jsonPayload is the actual notification payload.
 type jsonPayload struct {
 	Value1 string `json:"value1"`
@@ -36,11 +42,11 @@ func createJSONToSend(config *Config, message string, params *types.Params) ([]b
 	}
 
 	switch config.UseMessageAsValue {
-	case 1:
+	case ValueFieldOne:
 		payload.Value1 = message
-	case 2:
+	case ValueFieldTwo:
 		payload.Value2 = message
-	case 3:
+	case ValueFieldThree:
 		payload.Value3 = message
 	}
 

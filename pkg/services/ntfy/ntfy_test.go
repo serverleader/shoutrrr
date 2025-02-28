@@ -142,4 +142,9 @@ var _ = ginkgo.Describe("the ntfy service", func() {
 			})
 		})
 	})
+
+	ginkgo.It("should return the correct service ID", func() {
+		service := &Service{}
+		gomega.Expect(service.GetID()).To(gomega.Equal("ntfy"))
+	})
 })

@@ -61,6 +61,7 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 	if config.UseMessageAsValue == DisabledValue {
 		config.UseMessageAsValue = DefaultMessageValue
 	}
+
 	config.WebHookID = url.Hostname()
 
 	for key, vals := range url.Query() {

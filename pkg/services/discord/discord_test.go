@@ -58,6 +58,10 @@ var _ = ginkgo.Describe("the discord service", func() {
 			var impl types.Service = service
 			gomega.Expect(impl).ToNot(gomega.BeNil())
 		})
+		ginkgo.It("returns the correct service identifier", func() {
+			// No initialization needed since GetID is static
+			gomega.Expect(service.GetID()).To(gomega.Equal("discord"))
+		})
 	})
 	ginkgo.Describe("creating a config", func() {
 		ginkgo.When("given an url and a message", func() {

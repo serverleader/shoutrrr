@@ -6,8 +6,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/nicholas-fedor/shoutrrr/pkg/types"
-
 	"github.com/nicholas-fedor/shoutrrr/pkg/services/standard"
 )
 
@@ -22,10 +20,24 @@ type Config struct {
 	TokenB   string `url:"path2"`
 }
 
-// GetURL returns a URL representation of it's current field values.
+// Constants for URL path length checks.
+const (
+	Scheme             = "rocketchat"
+	NotEnoughArguments = "the apiURL does not include enough arguments"
+	MinPathParts       = 3 // Minimum number of path parts required (including empty first slash)
+	TokenBIndex        = 2 // Index for TokenB in path
+	ChannelIndex       = 3 // Index for Channel in path
+)
+
+// GetURL returns a URL representation of its current field values.
 func (config *Config) GetURL() *url.URL {
+	host := config.Host
+	if config.Port != "" {
+		host = fmt.Sprintf("%s:%s", config.Host, config.Port)
+	}
+
 	u := &url.URL{
-		Host:       fmt.Sprintf("%s:%v", config.Host, config.Port),
+		Host:       host,
 		Path:       fmt.Sprintf("%s/%s", config.TokenA, config.TokenB),
 		Scheme:     Scheme,
 		ForceQuery: false,
@@ -34,14 +46,14 @@ func (config *Config) GetURL() *url.URL {
 	return u
 }
 
-// SetURL updates a ServiceConfig from a URL representation of it's field values.
+// SetURL updates a ServiceConfig from a URL representation of its field values.
 func (config *Config) SetURL(serviceURL *url.URL) error {
 	UserName := serviceURL.User.Username()
 	host := serviceURL.Hostname()
 
 	path := strings.Split(serviceURL.Path, "/")
 	if serviceURL.String() != "rocketchat://dummy@dummy.com" {
-		if len(path) < 3 {
+		if len(path) < MinPathParts {
 			return errors.New(NotEnoughArguments)
 		}
 	}
@@ -54,34 +66,19 @@ func (config *Config) SetURL(serviceURL *url.URL) error {
 		config.TokenA = path[1]
 	}
 
-	if len(path) > 2 {
-		config.TokenB = path[2]
+	if len(path) > TokenBIndex {
+		config.TokenB = path[TokenBIndex]
 	}
 
-	if len(path) > 3 {
+	if len(path) > ChannelIndex {
 		if serviceURL.Fragment != "" {
 			config.Channel = "#" + serviceURL.Fragment
-		} else if !strings.HasPrefix(path[3], "@") {
-			config.Channel = "#" + path[3]
+		} else if !strings.HasPrefix(path[ChannelIndex], "@") {
+			config.Channel = "#" + path[ChannelIndex]
 		} else {
-			config.Channel = path[3]
+			config.Channel = path[ChannelIndex]
 		}
 	}
 
 	return nil
-}
-
-const (
-	// Scheme is the identifying part of this service's configuration URL.
-	Scheme = "rocketchat"
-	// NotEnoughArguments provided in the service URL.
-	NotEnoughArguments = "the apiURL does not include enough arguments"
-)
-
-// CreateConfigFromURL to use within the rocket.chat service.
-func CreateConfigFromURL(_ types.ConfigQueryResolver, serviceURL *url.URL) (*Config, error) {
-	config := Config{}
-	err := config.SetURL(serviceURL)
-
-	return &config, err
 }

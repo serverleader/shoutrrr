@@ -501,6 +501,9 @@ var _ = ginkgo.Describe("the SMTP service", func() {
 			gomega.Expect(service.Config.Port).To(gomega.Equal(uint16(DefaultSMTPPort)))
 		})
 	})
+	ginkgo.It("returns the correct service identifier", func() {
+		gomega.Expect(service.GetID()).To(gomega.Equal("smtp"))
+	})
 })
 
 func testSendRecipient(testURL string, responses []string) failures.Failure {

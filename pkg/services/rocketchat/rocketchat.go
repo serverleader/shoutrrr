@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 
@@ -15,6 +16,7 @@ import (
 type Service struct {
 	standard.Standard
 	Config *Config
+	Client *http.Client // Add this field
 }
 
 // Initialize loads ServiceConfig from configURL and sets logger for this Service.
@@ -22,11 +24,20 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	service.Logger.SetLogger(logger)
 
 	service.Config = &Config{}
+	if service.Client == nil {
+		service.Client = http.DefaultClient // Default to standard client if not set
+	}
+
 	if err := service.Config.SetURL(configURL); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
 }
 
 // Send a notification message to Rocket.chat.
@@ -39,9 +50,9 @@ func (service *Service) Send(message string, params *types.Params) error {
 	apiURL := buildURL(config)
 	json, _ := CreateJSONPayload(config, message, params)
 
-	res, err = http.Post(apiURL, "application/json", bytes.NewReader(json))
+	res, err = service.Client.Post(apiURL, "application/json", bytes.NewReader(json))
 	if err != nil {
-		return fmt.Errorf("Error while posting to URL: %w\nHOST: %s\nPORT: %s", err, config.Host, config.Port)
+		return fmt.Errorf("error while posting to URL: %w\nHOST: %s\nPORT: %s", err, config.Host, config.Port)
 	}
 
 	defer res.Body.Close()
@@ -52,13 +63,14 @@ func (service *Service) Send(message string, params *types.Params) error {
 		return fmt.Errorf("notification failed: %d %s", res.StatusCode, resBody)
 	}
 
-	return err
+	return nil
 }
 
 func buildURL(config *Config) string {
+	base := config.Host
 	if config.Port != "" {
-		return fmt.Sprintf("https://%s:%s/hooks/%s/%s", config.Host, config.Port, config.TokenA, config.TokenB)
+		base = net.JoinHostPort(config.Host, config.Port)
 	}
 
-	return fmt.Sprintf("https://%s/hooks/%s/%s", config.Host, config.TokenA, config.TokenB)
+	return fmt.Sprintf("https://%s/hooks/%s/%s", base, config.TokenA, config.TokenB)
 }

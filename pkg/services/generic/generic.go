@@ -14,6 +14,11 @@ import (
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
+// Constants for the generic service.
+const (
+	JSONTemplate = "JSON" // Template identifier for JSON format
+)
+
 // Service providing a generic notification service.
 type Service struct {
 	standard.Standard
@@ -57,6 +62,11 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return service.Config.setURL(&service.pkr, configURL)
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 // GetConfigURLFromCustom creates a regular service URL from one with a custom host.
 func (*Service) GetConfigURLFromCustom(customURL *url.URL) (serviceURL *url.URL, err error) {
 	webhookURL := *customURL
@@ -75,7 +85,7 @@ func (*Service) GetConfigURLFromCustom(customURL *url.URL) (serviceURL *url.URL,
 func (service *Service) doSend(config *Config, params types.Params) error {
 	postURL := config.WebhookURL().String()
 
-	payload, err := service.getPayload(config, params)
+	payload, err := service.GetPayload(config, params)
 	if err != nil {
 		return err
 	}
@@ -108,11 +118,11 @@ func (service *Service) doSend(config *Config, params types.Params) error {
 	return err
 }
 
-func (service *Service) getPayload(config *Config, params types.Params) (io.Reader, error) {
+func (service *Service) GetPayload(config *Config, params types.Params) (io.Reader, error) {
 	switch config.Template {
 	case "":
 		return bytes.NewBufferString(params[config.MessageKey]), nil
-	case "json", "JSON":
+	case "json", JSONTemplate:
 		for key, value := range config.extraData {
 			params[key] = value
 		}

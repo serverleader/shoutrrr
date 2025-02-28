@@ -11,6 +11,11 @@ import (
 	"github.com/nicholas-fedor/shoutrrr/pkg/util"
 )
 
+// Constants for map parsing.
+const (
+	KeyValuePairSize = 2 // Number of elements in a key:value pair
+)
+
 // GetServiceConfig returns the inner config of a service.
 func GetServiceConfig(service types.Service) types.ServiceConfig {
 	serviceValue := reflect.Indirect(reflect.ValueOf(service))
@@ -116,7 +121,7 @@ func SetConfigField(config reflect.Value, field FieldInfo, inputValue string) (v
 		for _, pair := range pairs {
 			elems := strings.Split(pair, ":")
 
-			if len(elems) != 2 {
+			if len(elems) != KeyValuePairSize {
 				return false, errors.New("invalid field value format")
 			}
 

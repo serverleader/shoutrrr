@@ -1,4 +1,4 @@
-package bark
+package bark_test
 
 import (
 	"log"
@@ -7,34 +7,39 @@ import (
 	"os"
 	"testing"
 
-	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
-	"github.com/nicholas-fedor/shoutrrr/pkg/format"
-
 	"github.com/jarcoal/httpmock"
+	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/bark"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
-	gomegaformat "github.com/onsi/gomega/format"
+	"github.com/onsi/gomega/format"
 )
 
+// TestBark runs the Ginkgo test suite for the bark package.
 func TestBark(t *testing.T) {
-	gomegaformat.CharactersAroundMismatchToInclude = 20
+	format.CharactersAroundMismatchToInclude = 20 // Show more context in failure output
 
 	gomega.RegisterFailHandler(ginkgo.Fail)
 	ginkgo.RunSpecs(t, "Shoutrrr Bark Suite")
 }
 
 var (
-	service    *Service = &Service{}
-	envBarkURL *url.URL
-	logger     *log.Logger = testutils.TestLogger()
-	_                      = ginkgo.BeforeSuite(func() {
-		envBarkURL, _ = url.Parse(os.Getenv("SHOUTRRR_BARK_URL"))
+	service    *bark.Service = &bark.Service{}        // Bark service instance for testing
+	envBarkURL *url.URL                               // Environment-provided URL for integration tests
+	logger     *log.Logger   = testutils.TestLogger() // Shared logger for tests
+	_                        = ginkgo.BeforeSuite(func() {
+		// Load the integration test URL from environment, if available
+		var err error
+		envBarkURL, err = url.Parse(os.Getenv("SHOUTRRR_BARK_URL"))
+		if err != nil {
+			envBarkURL = &url.URL{} // Default to empty URL if parsing fails
+		}
 	})
 )
 
 var _ = ginkgo.Describe("the bark service", func() {
 	ginkgo.When("running integration tests", func() {
-		ginkgo.It("should not error out", func() {
+		ginkgo.It("sends a message successfully with a valid ENV URL", func() {
 			if envBarkURL.String() == "" {
 				ginkgo.Skip("No integration test ENV URL was set")
 
@@ -48,8 +53,8 @@ var _ = ginkgo.Describe("the bark service", func() {
 	})
 
 	ginkgo.Describe("the config", func() {
-		ginkgo.When("getting a API URL", func() {
-			ginkgo.It("should return the expected URL", func() {
+		ginkgo.When("getting an API URL", func() {
+			ginkgo.It("constructs the expected URL for various path formats", func() {
 				gomega.Expect(getAPIForPath("path")).To(gomega.Equal("https://host/path/endpoint"))
 				gomega.Expect(getAPIForPath("/path")).To(gomega.Equal("https://host/path/endpoint"))
 				gomega.Expect(getAPIForPath("/path/")).To(gomega.Equal("https://host/path/endpoint"))
@@ -58,24 +63,24 @@ var _ = ginkgo.Describe("the bark service", func() {
 				gomega.Expect(getAPIForPath("")).To(gomega.Equal("https://host/endpoint"))
 			})
 		})
+
 		ginkgo.When("only required fields are set", func() {
-			ginkgo.It("should set the optional fields to the defaults", func() {
+			ginkgo.It("applies default values to optional fields", func() {
 				serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 				gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
-
-				gomega.Expect(*service.Config).To(gomega.Equal(Config{ // Changed from service.config
+				gomega.Expect(*service.Config).To(gomega.Equal(bark.Config{
 					Host:      "hostname",
 					DeviceKey: "devicekey",
 					Scheme:    "https",
 				}))
 			})
 		})
+
 		ginkgo.When("parsing the configuration URL", func() {
-			ginkgo.It("should be identical after de-/serialization", func() {
+			ginkgo.It("preserves all fields after de-/serialization", func() {
 				testURL := "bark://:device-key@example.com:2225/?badge=5&category=CAT&group=GROUP&scheme=http&title=TITLE&url=URL"
-				config := &Config{}
-				pkr := format.NewPropKeyResolver(config)
-				gomega.Expect(config.setURL(&pkr, testutils.URLMust(testURL))).To(gomega.Succeed(), "verifying")
+				config := &bark.Config{}
+				gomega.Expect(config.SetURL(testutils.URLMust(testURL))).To(gomega.Succeed(), "verifying")
 				gomega.Expect(config.GetURL().String()).To(gomega.Equal(testURL))
 			})
 		})
@@ -89,41 +94,41 @@ var _ = ginkgo.Describe("the bark service", func() {
 			httpmock.DeactivateAndReset()
 		})
 
-		ginkgo.It("should not report an error if the server accepts the payload", func() {
+		ginkgo.It("sends successfully when the server accepts the payload", func() {
 			serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
-
-			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"), testutils.JSONRespondMust(200, apiResponse{ // Changed from service.config
-				Code:    http.StatusOK,
-				Message: "OK",
-			}))
-
+			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"),
+				testutils.JSONRespondMust(200, bark.APIResponse{
+					Code:    http.StatusOK,
+					Message: "OK",
+				}))
 			gomega.Expect(service.Send("Message", nil)).To(gomega.Succeed())
 		})
-		ginkgo.It("should not panic if a server error occurs", func() {
+
+		ginkgo.It("reports an error for a server error response", func() {
 			serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
-
-			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"), testutils.JSONRespondMust(500, apiResponse{ // Changed from service.config
-				Code:    500,
-				Message: "someone turned off the internet",
-			}))
-
+			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"),
+				testutils.JSONRespondMust(500, bark.APIResponse{
+					Code:    500,
+					Message: "someone turned off the internet",
+				}))
 			gomega.Expect(service.Send("Message", nil)).To(gomega.HaveOccurred())
 		})
-		ginkgo.It("should not panic if a server responds with an unknown message", func() {
+
+		ginkgo.It("handles an unexpected server response gracefully", func() {
 			serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
-
-			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"), testutils.JSONRespondMust(200, apiResponse{ // Changed from service.config
-				Code:    500,
-				Message: "For some reason, the response code and HTTP code is different?",
-			}))
-
+			httpmock.RegisterResponder("POST", service.Config.GetAPIURL("push"),
+				testutils.JSONRespondMust(200, bark.APIResponse{
+					Code:    500,
+					Message: "For some reason, the response code and HTTP code is different?",
+				}))
 			gomega.Expect(service.Send("Message", nil)).To(gomega.HaveOccurred())
 		})
-		ginkgo.It("should not panic if a communication error occurs", func() {
-			httpmock.DeactivateAndReset()
+
+		ginkgo.It("handles communication errors without panicking", func() {
+			httpmock.DeactivateAndReset() // Ensure no mocks interfere
 			serviceURL := testutils.URLMust("bark://:devicekey@nonresolvablehostname")
 			gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 			gomega.Expect(service.Send("Message", nil)).To(gomega.HaveOccurred())
@@ -132,16 +137,15 @@ var _ = ginkgo.Describe("the bark service", func() {
 
 	ginkgo.Describe("the basic service API", func() {
 		ginkgo.Describe("the service config", func() {
-			ginkgo.It("should implement basic service config API methods correctly", func() {
-				testutils.TestConfigGetInvalidQueryValue(&Config{})
-				testutils.TestConfigSetInvalidQueryValue(&Config{}, "bark://:mock-device@host/?foo=bar")
-
-				testutils.TestConfigSetDefaultValues(&Config{})
-
-				testutils.TestConfigGetEnumsCount(&Config{}, 0)
-				testutils.TestConfigGetFieldsCount(&Config{}, 9)
+			ginkgo.It("implements basic service config API methods correctly", func() {
+				testutils.TestConfigGetInvalidQueryValue(&bark.Config{})
+				testutils.TestConfigSetInvalidQueryValue(&bark.Config{}, "bark://:mock-device@host/?foo=bar")
+				testutils.TestConfigSetDefaultValues(&bark.Config{})
+				testutils.TestConfigGetEnumsCount(&bark.Config{}, 0)
+				testutils.TestConfigGetFieldsCount(&bark.Config{}, 9)
 			})
 		})
+
 		ginkgo.Describe("the service instance", func() {
 			ginkgo.BeforeEach(func() {
 				httpmock.Activate()
@@ -149,17 +153,22 @@ var _ = ginkgo.Describe("the bark service", func() {
 			ginkgo.AfterEach(func() {
 				httpmock.DeactivateAndReset()
 			})
-			ginkgo.It("should implement basic service API methods correctly", func() {
+			ginkgo.It("implements basic service API methods correctly", func() {
 				serviceURL := testutils.URLMust("bark://:devicekey@hostname")
 				gomega.Expect(service.Initialize(serviceURL, logger)).To(gomega.Succeed())
 				testutils.TestServiceSetInvalidParamValue(service, "foo", "bar")
+			})
+			ginkgo.It("returns the correct service identifier", func() {
+				// No initialization needed since GetID is static
+				gomega.Expect(service.GetID()).To(gomega.Equal("bark"))
 			})
 		})
 	})
 })
 
+// getAPIForPath is a helper to construct an API URL for testing.
 func getAPIForPath(path string) string {
-	c := Config{Host: "host", Path: path, Scheme: "https"}
+	c := bark.Config{Host: "host", Path: path, Scheme: "https"}
 
 	return c.GetAPIURL("endpoint")
 }

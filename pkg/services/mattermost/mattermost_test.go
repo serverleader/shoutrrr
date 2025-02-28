@@ -290,4 +290,9 @@ var _ = ginkgo.Describe("the mattermost service", func() {
 			})
 		})
 	})
+
+	ginkgo.It("should return the correct service ID", func() {
+		service := &Service{}
+		gomega.Expect(service.GetID()).To(gomega.Equal("mattermost"))
+	})
 })

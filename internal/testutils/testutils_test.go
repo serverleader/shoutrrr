@@ -130,3 +130,4 @@ type dummyService struct {
 
 func (s *dummyService) Initialize(_ *url.URL, _ types.StdLogger) error { return nil }
 func (s *dummyService) Send(_ string, _ *types.Params) error           { return nil }
+func (s *dummyService) GetID() string                                  { return "dummy" }

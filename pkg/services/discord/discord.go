@@ -20,17 +20,20 @@ type Service struct {
 	pkr    format.PropKeyResolver
 }
 
-var limits = types.MessageLimit{
-	ChunkSize:      2000,
-	TotalChunkSize: 6000,
-	ChunkCount:     10,
-}
-
+// Message limit constants.
 const (
-	hookURL = "https://discord.com/api/webhooks"
-	// Only search this many runes for a good split position.
-	maxSearchRunes = 100
+	ChunkSize      = 2000 // Maximum size of a single message chunk
+	TotalChunkSize = 6000 // Maximum total size of all chunks
+	ChunkCount     = 10   // Maximum number of chunks allowed
+	MaxSearchRunes = 100  // Maximum number of runes to search for split position
+	HooksBaseURL   = "https://discord.com/api/webhooks"
 )
+
+var limits = types.MessageLimit{
+	ChunkSize:      ChunkSize,
+	TotalChunkSize: TotalChunkSize,
+	ChunkCount:     ChunkCount,
+}
 
 // Send a notification message to discord.
 func (service *Service) Send(message string, params *types.Params) error {
@@ -101,7 +104,7 @@ func CreateItemsFromPlain(plain string, splitLines bool) (batches [][]types.Mess
 	}
 
 	for {
-		items, omitted := util.PartitionMessage(plain, limits, maxSearchRunes)
+		items, omitted := util.PartitionMessage(plain, limits, MaxSearchRunes)
 		batches = append(batches, items)
 
 		if omitted == 0 {
@@ -131,11 +134,16 @@ func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) e
 	return nil
 }
 
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
+
 // CreateAPIURLFromConfig takes a discord config object and creates a post url.
 func CreateAPIURLFromConfig(config *Config) string {
 	return fmt.Sprintf(
 		"%s/%s/%s",
-		hookURL,
+		HooksBaseURL,
 		config.WebhookID,
 		config.Token)
 }

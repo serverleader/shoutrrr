@@ -54,3 +54,8 @@ func (service *Service) Initialize(_ *url.URL, logger types.StdLogger) error {
 
 	return nil
 }
+
+// GetID returns the service identifier.
+func (service *Service) GetID() string {
+	return Scheme
+}
