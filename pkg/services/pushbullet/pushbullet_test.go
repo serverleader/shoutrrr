@@ -41,6 +41,9 @@ var _ = ginkgo.Describe("the pushbullet service", func() {
 			err = service.Send("This is an integration test message", nil)
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
+		ginkgo.It("returns the correct service identifier", func() {
+			gomega.Expect(service.GetID()).To(gomega.Equal("pushbullet"))
+		})
 	})
 
 	ginkgo.Describe("the pushbullet config", func() {

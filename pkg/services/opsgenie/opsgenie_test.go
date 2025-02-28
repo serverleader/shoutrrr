@@ -246,6 +246,11 @@ var _ = ginkgo.Describe("the OpsGenie service", func() {
 			})
 		})
 	})
+
+	ginkgo.It("should return the correct service ID", func() {
+		service := &Service{}
+		gomega.Expect(service.GetID()).To(gomega.Equal("opsgenie"))
+	})
 })
 
 var _ = ginkgo.Describe("the OpsGenie Config struct", func() {

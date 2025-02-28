@@ -457,6 +457,11 @@ var _ = ginkgo.Describe("the matrix service", func() {
 		testutils.TestConfigGetEnumsCount(&Config{}, 0)
 		testutils.TestConfigGetFieldsCount(&Config{}, 4)
 	})
+
+	ginkgo.It("should return the correct service ID", func() {
+		service := &Service{}
+		gomega.Expect(service.GetID()).To(gomega.Equal("matrix"))
+	})
 })
 
 // setupMockResponders for HTTPS.

@@ -48,6 +48,9 @@ var _ = ginkgo.Describe("the pushover service", func() {
 			err = service.Send("this is an integration test", nil)
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
+		ginkgo.It("returns the correct service identifier", func() {
+			gomega.Expect(service.GetID()).To(gomega.Equal("pushover"))
+		})
 	})
 })
 
