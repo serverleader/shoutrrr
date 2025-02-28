@@ -299,6 +299,10 @@ var _ = ginkgo.Describe("the zulip service", func() {
 			})
 		})
 	})
+	ginkgo.It("should return the correct service ID", func() {
+		service := &Service{}
+		gomega.Expect(service.GetID()).To(gomega.Equal("zulip"))
+	})
 })
 
 func expectErrorMessageGivenURL(msg ErrorMessage, zulipURL *url.URL) {

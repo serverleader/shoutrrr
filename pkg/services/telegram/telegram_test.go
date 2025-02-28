@@ -155,6 +155,10 @@ var _ = ginkgo.Describe("the telegram service", func() {
 		testutils.TestConfigGetEnumsCount(config, 1)
 		testutils.TestConfigGetFieldsCount(config, 6)
 	})
+	ginkgo.It("should return the correct service ID", func() {
+		service := &Service{}
+		gomega.Expect(service.GetID()).To(gomega.Equal("telegram"))
+	})
 })
 
 func expectErrorAndEmptyObject(telegram *Service, rawURL string, logger *log.Logger) {

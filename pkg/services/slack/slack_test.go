@@ -54,6 +54,9 @@ var _ = ginkgo.Describe("the slack service", func() {
 			err = service.Send("This is an integration test message", nil)
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
+		ginkgo.It("returns the correct service identifier", func() {
+			gomega.Expect(service.GetID()).To(gomega.Equal("slack"))
+		})
 	})
 
 	// xoxb:123456789012-1234567890123-4mt0t4l1YL3g1T5L4cK70k3N

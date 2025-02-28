@@ -150,4 +150,8 @@ var _ = ginkgo.Describe("the teams service", func() {
 			gomega.Expect(err).To(gomega.HaveOccurred())
 		})
 	})
+	ginkgo.It("should return the correct service ID", func() {
+		service := &Service{}
+		gomega.Expect(service.GetID()).To(gomega.Equal("teams"))
+	})
 })
