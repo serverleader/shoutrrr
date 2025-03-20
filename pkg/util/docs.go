@@ -2,8 +2,6 @@ package util
 
 import (
 	"fmt"
-
-	"github.com/serverleader/shoutrrr/internal/meta"
 )
 
 // DocsURL returns a full documentation URL for the current version of Shoutrrr with the path appended.
@@ -13,5 +11,5 @@ func DocsURL(path string) string {
 	if len(path) > 0 && path[0] == '/' {
 		path = path[1:]
 	}
-	return fmt.Sprintf("https://containrrr.dev/shoutrrr/%s/%s", meta.DocsVersion, path)
+	return fmt.Sprintf("https://github.com/serverleader/shoutrrr/blob/main/docs/%s", path)
 }
