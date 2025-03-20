@@ -3,6 +3,7 @@ module github.com/serverleader/shoutrrr
 go 1.18
 
 require (
+	github.com/containrrr/shoutrrr v0.8.0
 	github.com/fatih/color v1.15.0
 	github.com/jarcoal/httpmock v1.3.0
 	github.com/mattn/go-colorable v0.1.13
@@ -45,3 +46,5 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/containrrr/shoutrrr => github.com/serverleader/shoutrrr v0.8.1
