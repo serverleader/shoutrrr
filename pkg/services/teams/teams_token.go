@@ -16,7 +16,7 @@ func hashPartValid(token string) bool {
 	return matchesRegexp(hex32Pattern, token)
 }
 
-func verifyWebhookParts(p [4]string) error {
+func verifyWebhookParts(p [5]string) error {
 	if !uuidPartValid(p[0]) {
 		return fmt.Errorf("first token part is invalid: '%v'", p[0])
 	}
@@ -28,6 +28,10 @@ func verifyWebhookParts(p [4]string) error {
 	}
 	if !uuidPartValid(p[3]) {
 		return fmt.Errorf("forth token part is invalid: '%v'", p[3])
+	}
+	// The 5th part (ExtraID) is required and cannot be empty
+	if p[4] == "" {
+		return fmt.Errorf("fifth token part (extraId) is required")
 	}
 	return nil
 }

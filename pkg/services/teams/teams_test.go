@@ -2,6 +2,7 @@ package teams
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/url"
 	"testing"
@@ -13,11 +14,12 @@ import (
 )
 
 const (
-	legacyWebhookURL = "https://outlook.office.com/webhook/11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/IncomingWebhook/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc"
-	scopedWebhookURL = "https://test.webhook.office.com/webhookb2/11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/IncomingWebhook/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc"
+	extraIdValue     = "V2ESyij_gAljSoUQHvZoZYzlpAoAXExyOl26dlf1xHEx05"
+	legacyWebhookURL = "https://outlook.webhook.office.com/webhookb2/11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/IncomingWebhook/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc/" + extraIdValue
+	scopedWebhookURL = "https://test.webhook.office.com/webhookb2/11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/IncomingWebhook/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc/" + extraIdValue
 	scopedDomainHost = "test.webhook.office.com"
-	testURLBase      = "teams://11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc"
-	scopedURLBase    = testURLBase + `?host=` + scopedDomainHost
+	testURLBase      = "teams://11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc/" + extraIdValue + "?host=outlook.webhook.office.com"
+	scopedURLBase    = "teams://11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc/" + extraIdValue + "?host=" + scopedDomainHost
 )
 
 var logger = log.New(GinkgoWriter, "Test", log.LstdFlags)
@@ -31,13 +33,14 @@ var _ = Describe("the teams service", func() {
 	When("creating the webhook URL", func() {
 		It("should match the expected output for legacy URLs", func() {
 			config := Config{}
-			config.setFromWebhookParts([4]string{
+			config.setFromWebhookParts([5]string{
 				"11111111-4444-4444-8444-cccccccccccc",
 				"22222222-4444-4444-8444-cccccccccccc",
 				"33333333012222222222333333333344",
 				"44444444-4444-4444-8444-cccccccccccc",
+				extraIdValue,
 			})
-			apiURL := buildWebhookURL(LegacyHost, config.Group, config.Tenant, config.AltID, config.GroupOwner)
+			apiURL := buildWebhookURL("outlook.webhook.office.com", config.Group, config.Tenant, config.AltID, config.GroupOwner, config.ExtraID)
 			Expect(apiURL).To(Equal(legacyWebhookURL))
 
 			parts, err := parseAndVerifyWebhookURL(apiURL)
@@ -46,15 +49,48 @@ var _ = Describe("the teams service", func() {
 		})
 		It("should match the expected output for custom URLs", func() {
 			config := Config{}
-			config.setFromWebhookParts([4]string{
+			config.setFromWebhookParts([5]string{
 				"11111111-4444-4444-8444-cccccccccccc",
 				"22222222-4444-4444-8444-cccccccccccc",
 				"33333333012222222222333333333344",
 				"44444444-4444-4444-8444-cccccccccccc",
+				extraIdValue,
 			})
-			apiURL := buildWebhookURL(scopedDomainHost, config.Group, config.Tenant, config.AltID, config.GroupOwner)
+			apiURL := buildWebhookURL(scopedDomainHost, config.Group, config.Tenant, config.AltID, config.GroupOwner, config.ExtraID)
 			Expect(apiURL).To(Equal(scopedWebhookURL))
 
+			parts, err := parseAndVerifyWebhookURL(apiURL)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(parts).To(Equal(config.webhookParts()))
+		})
+		It("should handle URLs with the extra component", func() {
+			config := Config{}
+			config.setFromWebhookParts([5]string{
+				"11111111-4444-4444-8444-cccccccccccc",
+				"22222222-4444-4444-8444-cccccccccccc",
+				"33333333012222222222333333333344",
+				"44444444-4444-4444-8444-cccccccccccc",
+				extraIdValue,
+			})
+			
+			// Build the webhook URL with the extra component
+			apiURL := buildWebhookURL(scopedDomainHost, config.Group, config.Tenant, config.AltID, config.GroupOwner, config.ExtraID)
+			
+			// The expected URL should include the extra component
+			expectedURL := fmt.Sprintf(
+				"https://%s/%s/%s@%s/%s/%s/%s/%s",
+				scopedDomainHost,
+				Path,
+				config.Group,
+				config.Tenant,
+				ProviderName,
+				config.AltID,
+				config.GroupOwner,
+				config.ExtraID)
+			
+			Expect(apiURL).To(Equal(expectedURL))
+			
+			// Make sure we can parse it back
 			parts, err := parseAndVerifyWebhookURL(apiURL)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(parts).To(Equal(config.webhookParts()))
@@ -69,7 +105,7 @@ var _ = Describe("the teams service", func() {
 				url, err := url.Parse(testURL)
 				Expect(err).NotTo(HaveOccurred(), "parsing")
 
-				config := &Config{Host: LegacyHost}
+				config := &Config{}
 				err = config.SetURL(url)
 				Expect(err).NotTo(HaveOccurred(), "verifying")
 
@@ -115,7 +151,9 @@ var _ = Describe("the teams service", func() {
 				serviceURL, err := service.GetConfigURLFromCustom(customURL)
 				Expect(err).NotTo(HaveOccurred(), "converting")
 
-				Expect(serviceURL.String()).To(Equal(testURLBase + "?color=f008c1&title=TheTitle"))
+				// The query parameters are passed through to the service URL
+				expectedURL := "teams://11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc/" + extraIdValue + "?color=f008c1&host=outlook.webhook.office.com&title=TheTitle"
+				Expect(serviceURL.String()).To(Equal(expectedURL))
 			})
 		})
 	})
@@ -140,16 +178,14 @@ var _ = Describe("the teams service", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 		It("should not panic if an error occurs when sending the payload", func() {
-			serviceURL, _ := url.Parse(testURLBase)
+			serviceURL, _ := url.Parse(scopedURLBase)
 			err = service.Initialize(serviceURL, logger)
 			Expect(err).NotTo(HaveOccurred())
 
-			httpmock.RegisterResponder("POST", legacyWebhookURL, httpmock.NewErrorResponder(errors.New("dummy error")))
+			httpmock.RegisterResponder("POST", scopedWebhookURL, httpmock.NewErrorResponder(errors.New("dummy error")))
 
 			err = service.Send("Message", nil)
 			Expect(err).To(HaveOccurred())
 		})
-
 	})
-
 })
