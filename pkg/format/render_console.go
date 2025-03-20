@@ -6,7 +6,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/containrrr/shoutrrr/pkg/util"
+	"github.com/serverleader/shoutrrr/pkg/util"
 )
 
 // ConsoleTreeRenderer renders a ContainerNode tree into a ansi-colored console string

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/containrrr/shoutrrr/pkg/types"
-	"github.com/containrrr/shoutrrr/pkg/util"
+	"github.com/serverleader/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/util"
 )
 
 // FieldInfo is the meta data about a config field

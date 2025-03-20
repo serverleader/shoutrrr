@@ -4,10 +4,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/format"
+	"github.com/serverleader/shoutrrr/pkg/types"
 
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
+	"github.com/serverleader/shoutrrr/pkg/services/standard"
 )
 
 // Config for use within the gotify plugin

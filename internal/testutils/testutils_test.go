@@ -4,9 +4,9 @@ import (
 	"net/url"
 	"testing"
 
-	. "github.com/containrrr/shoutrrr/internal/testutils"
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	. "github.com/serverleader/shoutrrr/internal/testutils"
+	"github.com/serverleader/shoutrrr/pkg/services/standard"
+	"github.com/serverleader/shoutrrr/pkg/types"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

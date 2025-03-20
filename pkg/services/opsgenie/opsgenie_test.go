@@ -11,7 +11,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/types"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

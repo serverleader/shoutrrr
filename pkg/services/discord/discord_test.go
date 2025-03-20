@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/containrrr/shoutrrr/internal/testutils"
-	. "github.com/containrrr/shoutrrr/pkg/services/discord"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/internal/testutils"
+	. "github.com/serverleader/shoutrrr/pkg/services/discord"
+	"github.com/serverleader/shoutrrr/pkg/types"
 	"github.com/jarcoal/httpmock"
 
 	"net/url"

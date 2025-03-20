@@ -3,11 +3,11 @@ package rocketchat
 import (
 	"errors"
 	"fmt"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/types"
 	"net/url"
 	"strings"
 
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
+	"github.com/serverleader/shoutrrr/pkg/services/standard"
 )
 
 // Config for the rocket.chat service

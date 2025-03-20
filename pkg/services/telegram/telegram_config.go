@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/format"
+	"github.com/serverleader/shoutrrr/pkg/types"
 )
 
 // Config for use within the telegram plugin

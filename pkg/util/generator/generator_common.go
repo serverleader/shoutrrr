@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	f "github.com/containrrr/shoutrrr/pkg/format"
+	f "github.com/serverleader/shoutrrr/pkg/format"
 	"github.com/fatih/color"
 	"io"
 	re "regexp"

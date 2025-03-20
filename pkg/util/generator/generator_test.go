@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/pkg/util/generator"
+	"github.com/serverleader/shoutrrr/pkg/util/generator"
 	"github.com/mattn/go-colorable"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

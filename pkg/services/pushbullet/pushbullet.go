@@ -2,10 +2,10 @@ package pushbullet
 
 import (
 	"fmt"
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	"github.com/containrrr/shoutrrr/pkg/types"
-	"github.com/containrrr/shoutrrr/pkg/util/jsonclient"
+	"github.com/serverleader/shoutrrr/pkg/format"
+	"github.com/serverleader/shoutrrr/pkg/services/standard"
+	"github.com/serverleader/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/util/jsonclient"
 	"net/url"
 )
 

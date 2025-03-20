@@ -2,14 +2,14 @@ package generic
 
 import (
 	"errors"
-	"github.com/containrrr/shoutrrr/internal/testutils"
+	"github.com/serverleader/shoutrrr/internal/testutils"
 	"io"
 	"log"
 	"net/url"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/format"
+	"github.com/serverleader/shoutrrr/pkg/types"
 	"github.com/jarcoal/httpmock"
 
 	. "github.com/onsi/ginkgo/v2"

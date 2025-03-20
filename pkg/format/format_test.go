@@ -7,8 +7,8 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/containrrr/shoutrrr/pkg/services/standard"
-	t "github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/services/standard"
+	t "github.com/serverleader/shoutrrr/pkg/types"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/containrrr/shoutrrr/internal/meta"
-	. "github.com/containrrr/shoutrrr/pkg/util"
+	"github.com/serverleader/shoutrrr/internal/meta"
+	. "github.com/serverleader/shoutrrr/pkg/util"
 )
 
 func TestUtil(t *testing.T) {

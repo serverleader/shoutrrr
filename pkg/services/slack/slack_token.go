@@ -2,7 +2,7 @@ package slack
 
 import (
 	"fmt"
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/types"
 	"net/url"
 	"regexp"
 	"strings"

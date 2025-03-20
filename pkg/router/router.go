@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	t "github.com/containrrr/shoutrrr/pkg/types"
+	t "github.com/serverleader/shoutrrr/pkg/types"
 )
 
 // ServiceRouter is responsible for routing a message to a specific notification service using the notification URL

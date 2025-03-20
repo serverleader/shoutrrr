@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/internal/testutils"
+	"github.com/serverleader/shoutrrr/internal/testutils"
 
 	"github.com/jarcoal/httpmock"
 	. "github.com/onsi/ginkgo/v2"

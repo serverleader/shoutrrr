@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/containrrr/shoutrrr/internal/testutils"
-	"github.com/containrrr/shoutrrr/pkg/format"
-	"github.com/containrrr/shoutrrr/pkg/services/pushover"
+	"github.com/serverleader/shoutrrr/internal/testutils"
+	"github.com/serverleader/shoutrrr/pkg/format"
+	"github.com/serverleader/shoutrrr/pkg/services/pushover"
 	"github.com/jarcoal/httpmock"
 
 	. "github.com/onsi/ginkgo/v2"

@@ -1,6 +1,6 @@
 package format
 
-import t "github.com/containrrr/shoutrrr/pkg/types"
+import t "github.com/serverleader/shoutrrr/pkg/types"
 
 type testEnummer struct {
 	Choice int `key:"choice" default:"Maybe"`

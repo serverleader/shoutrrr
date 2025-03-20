@@ -3,7 +3,7 @@ package util
 import (
 	"fmt"
 
-	"github.com/containrrr/shoutrrr/internal/meta"
+	"github.com/serverleader/shoutrrr/internal/meta"
 )
 
 // DocsURL returns a full documentation URL for the current version of Shoutrrr with the path appended.

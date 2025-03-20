@@ -2,10 +2,10 @@ package generators
 
 import (
 	"fmt"
-	"github.com/containrrr/shoutrrr/pkg/generators/basic"
-	"github.com/containrrr/shoutrrr/pkg/generators/xouath2"
-	"github.com/containrrr/shoutrrr/pkg/services/telegram"
-	t "github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/generators/basic"
+	"github.com/serverleader/shoutrrr/pkg/generators/xouath2"
+	"github.com/serverleader/shoutrrr/pkg/services/telegram"
+	t "github.com/serverleader/shoutrrr/pkg/types"
 	"strings"
 )
 

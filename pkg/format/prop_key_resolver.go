@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	t "github.com/containrrr/shoutrrr/pkg/types"
+	t "github.com/serverleader/shoutrrr/pkg/types"
 )
 
 // PropKeyResolver implements the ConfigQueryResolver interface for services that uses key tags for query props

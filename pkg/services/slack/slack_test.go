@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/containrrr/shoutrrr/internal/testutils"
-	. "github.com/containrrr/shoutrrr/pkg/services/slack"
+	"github.com/serverleader/shoutrrr/internal/testutils"
+	. "github.com/serverleader/shoutrrr/pkg/services/slack"
 	"github.com/jarcoal/httpmock"
 
 	"net/url"

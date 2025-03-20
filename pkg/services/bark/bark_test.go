@@ -1,8 +1,8 @@
 package bark
 
 import (
-	"github.com/containrrr/shoutrrr/internal/testutils"
-	"github.com/containrrr/shoutrrr/pkg/format"
+	"github.com/serverleader/shoutrrr/internal/testutils"
+	"github.com/serverleader/shoutrrr/pkg/format"
 
 	"log"
 	"net/http"

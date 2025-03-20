@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	. "github.com/containrrr/shoutrrr/pkg/format"
+	. "github.com/serverleader/shoutrrr/pkg/format"
 )
 
 var _ = Describe("URLPart", func() {

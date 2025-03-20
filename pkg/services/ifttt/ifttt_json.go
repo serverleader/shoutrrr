@@ -3,7 +3,7 @@ package ifttt
 import (
 	"encoding/json"
 
-	"github.com/containrrr/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/types"
 )
 
 // jsonPayload is the actual notification payload
