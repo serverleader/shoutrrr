@@ -1,6 +1,6 @@
 site_name: Shoutrrr
 site_url: https://containrrr.dev/shoutrrr/
-repo_url: https://github.com/containrrr/shoutrrr/
+repo_url: https://github.com/serverleader/shoutrrr/
 edit_uri: edit/main/docs/
 theme:
   name: 'material'

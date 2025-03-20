@@ -46,6 +46,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/containrrr/shoutrrr => github.com/serverleader/shoutrrr v0.8.1
-
 replace github.com/serverleader/shoutrrr => .
