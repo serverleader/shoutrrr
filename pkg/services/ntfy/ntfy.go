@@ -9,9 +9,10 @@ import (
 
 	"github.com/serverleader/shoutrrr/internal/meta"
 	"github.com/serverleader/shoutrrr/pkg/format"
+	"github.com/serverleader/shoutrrr/pkg/util/jsonclient"
+
 	"github.com/serverleader/shoutrrr/pkg/services/standard"
 	"github.com/serverleader/shoutrrr/pkg/types"
-	"github.com/serverleader/shoutrrr/pkg/util/jsonclient"
 )
 
 // Service sends notifications Ntfy

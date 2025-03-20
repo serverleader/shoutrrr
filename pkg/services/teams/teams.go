@@ -11,6 +11,7 @@ import (
 	"github.com/serverleader/shoutrrr/pkg/format"
 	"github.com/serverleader/shoutrrr/pkg/services/standard"
 	"github.com/serverleader/shoutrrr/pkg/types"
+	"github.com/serverleader/shoutrrr/pkg/util"
 )
 
 // Service providing teams as a notification service
@@ -34,20 +35,13 @@ func (service *Service) Send(message string, params *types.Params) error {
 // Initialize loads ServiceConfig from configURL and sets logger for this Service
 func (service *Service) Initialize(configURL *url.URL, logger types.StdLogger) error {
 	service.Logger.SetLogger(logger)
-	service.config = &Config{}
+	service.config = &Config{
+		Host: LegacyHost,
+	}
 
 	service.pkr = format.NewPropKeyResolver(service.config)
 
-	if err := service.config.setURL(&service.pkr, configURL); err != nil {
-		return err
-	}
-
-	// Ensure the host is specified
-	if service.config.Host == "" {
-		return fmt.Errorf("missing required host parameter (organization.webhook.office.com)")
-	}
-
-	return nil
+	return service.config.setURL(&service.pkr, configURL)
 }
 
 // GetConfigURLFromCustom creates a regular service URL from one with a custom host
@@ -100,9 +94,12 @@ func (service *Service) doSend(config *Config, message string) error {
 
 	host := config.Host
 	if host == "" {
-		return fmt.Errorf("missing required host parameter (organization.webhook.office.com)")
+		host = LegacyHost
+		// Emit a warning to the log for now.
+		// TODO(v0.6): Remove legacy support as it should be fully deprecated now
+		service.Logf(`Warning: No host specified, update your Teams URL: %s`, util.DocsURL(`services/teams`))
 	}
-	postURL := buildWebhookURL(host, config.Group, config.Tenant, config.AltID, config.GroupOwner, config.ExtraID)
+	postURL := buildWebhookURL(host, config.Group, config.Tenant, config.AltID, config.GroupOwner)
 
 	res, err := http.Post(postURL, "application/json", bytes.NewBuffer(payload))
 	if err == nil && res.StatusCode != http.StatusOK {
