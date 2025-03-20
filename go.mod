@@ -1,4 +1,4 @@
-module github.com/containrrr/shoutrrr
+module github.com/serverleader/shoutrrr
 
 go 1.18
 
