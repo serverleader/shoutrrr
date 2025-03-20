@@ -1,6 +1,6 @@
 # Teams
 
-!!! attention New webhook URL format only
+!!! attention "New webhook URL format only"
     Shoutrrr now only supports the new Teams webhook URL format with organization domain.
     You must specify your organization domain using:
     ```text
@@ -12,8 +12,17 @@
 
 ## URL Format
 
-!!! info ""
-    teams://__`group`__@__`tenant`__/__`altId`__/__`groupOwner`__/__`extraId`__?host=__`organization`__.webhook.office.com
+```
+teams://group@tenant/altId/groupOwner/extraId?host=organization.webhook.office.com
+```
+
+Where:
+- `group`: The first UUID component from the webhook URL
+- `tenant`: The second UUID component from the webhook URL
+- `altId`: The third component (hex string) from the webhook URL
+- `groupOwner`: The fourth UUID component from the webhook URL
+- `extraId`: The fifth component at the end of the webhook URL
+- `organization`: Your organization name for the webhook domain
 
 --8<-- "docs/services/teams/config.md"
 
@@ -28,15 +37,15 @@ The token is extracted from your webhook URL:
 
 <pre><code>https://<b>&lt;organization&gt;</b>.webhook.office.com/webhookb2/<b>&lt;group&gt;</b>@<b>&lt;tenant&gt;</b>/IncomingWebhook/<b>&lt;altId&gt;</b>/<b>&lt;groupOwner&gt;</b>/<b>&lt;extraId&gt;</b></code></pre>
 
-!!! info "Webhook Format Details"
-    The webhook URL format includes:
+!!! note "Important components"
+    All parts of the webhook URL are required:
     
-    - `organization`: Your organization name (required)
-    - `group`: The first UUID component (required)
-    - `tenant`: The second UUID component (required)
-    - `altId`: The third component (hex string) (required)
-    - `groupOwner`: The fourth UUID component (required)
-    - `extraId`: The additional component at the end (required)
+    - `organization`: Your organization name
+    - `group`: The first UUID component
+    - `tenant`: The second UUID component
+    - `altId`: The third component (hex string)
+    - `groupOwner`: The fourth UUID component
+    - `extraId`: The additional component at the end
 
 ## Example
 
