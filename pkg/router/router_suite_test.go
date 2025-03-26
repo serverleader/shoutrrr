@@ -18,7 +18,7 @@ func TestRouter(t *testing.T) {
 var sr ServiceRouter
 
 const (
-	mockCustomURL = "teams+https://publicservice.info/webhook/11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/IncomingWebhook/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc"
+	mockCustomURL = "teams+https://publicservice.webhook.office.com/webhookb2/11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/IncomingWebhook/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc/V2ESyij_gAljSoUQHvZoZYzlpAoAXExyOl26dlf1xHEx05?host=publicservice.webhook.office.com"
 )
 
 var _ = ginkgo.Describe("the router suite", func() {
@@ -47,12 +47,15 @@ var _ = ginkgo.Describe("the router suite", func() {
 			gomega.Expect(err).To(gomega.HaveOccurred())
 			gomega.Expect(serviceName).To(gomega.Equal(""))
 		})
-		ginkgo.It("should return an error if the protocol/service part is containing invalid letters", func() {
-			url := "a d://rest/of/url"
-			serviceName, _, err := sr.ExtractServiceName(url)
-			gomega.Expect(err).To(gomega.HaveOccurred())
-			gomega.Expect(serviceName).To(gomega.Equal(""))
-		})
+		ginkgo.It(
+			"should return an error if the protocol/service part is containing invalid letters",
+			func() {
+				url := "a d://rest/of/url"
+				serviceName, _, err := sr.ExtractServiceName(url)
+				gomega.Expect(err).To(gomega.HaveOccurred())
+				gomega.Expect(serviceName).To(gomega.Equal(""))
+			},
+		)
 	})
 
 	ginkgo.When("initializing a service with a custom URL", func() {

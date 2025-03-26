@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	"github.com/jarcoal/httpmock"
+	"github.com/onsi/ginkgo/v2"
+	"github.com/onsi/gomega"
+
 	"github.com/nicholas-fedor/shoutrrr/internal/testutils"
 	"github.com/nicholas-fedor/shoutrrr/pkg/router"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
-	"github.com/onsi/ginkgo/v2"
-	"github.com/onsi/gomega"
 )
 
 func TestServices(t *testing.T) {
@@ -33,7 +34,7 @@ var serviceURLs = map[string]string{
 	"rocketchat": "rocketchat://example.com/token/channel",
 	"slack":      "slack://AAAAAAAAA/BBBBBBBBB/123456789123456789123456",
 	"smtp":       "smtp://host.tld:25/?fromAddress=from@host.tld&toAddresses=to@host.tld",
-	"teams":      "teams://11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc",
+	"teams":      "teams://11111111-4444-4444-8444-cccccccccccc@22222222-4444-4444-8444-cccccccccccc/33333333012222222222333333333344/44444444-4444-4444-8444-cccccccccccc/V2ESyij_gAljSoUQHvZoZYzlpAoAXExyOl26dlf1xHEx05?host=test.webhook.office.com",
 	"telegram":   "telegram://000000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA@telegram?channels=channel",
 	"xmpp":       "xmpp://",
 	"zulip":      "zulip://mail:key@example.com/?stream=foo&topic=bar",
@@ -99,7 +100,11 @@ var _ = ginkgo.Describe("services", func() {
 					respStatus = http.StatusNoContent
 				}
 				if key == "mattermost" {
-					httpmock.RegisterResponder("POST", "https://example.com/hooks/token", httpmock.NewStringResponder(http.StatusOK, ""))
+					httpmock.RegisterResponder(
+						"POST",
+						"https://example.com/hooks/token",
+						httpmock.NewStringResponder(http.StatusOK, ""),
+					)
 				} else {
 					httpmock.RegisterNoResponder(httpmock.NewStringResponder(respStatus, serviceResponses[key]))
 				}
@@ -120,7 +125,11 @@ var _ = ginkgo.Describe("services", func() {
 					if mockService, ok := service.(testutils.MockClientService); ok {
 						httpmock.ActivateNonDefault(mockService.GetHTTPClient())
 					}
-					httpmock.RegisterResponder("POST", "http://example.com/hooks/token", httpmock.NewStringResponder(http.StatusOK, ""))
+					httpmock.RegisterResponder(
+						"POST",
+						"http://example.com/hooks/token",
+						httpmock.NewStringResponder(http.StatusOK, ""),
+					)
 
 					err = service.Send("test", (*types.Params)(&map[string]string{
 						"title": "test title",

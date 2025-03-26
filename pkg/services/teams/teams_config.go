@@ -12,7 +12,12 @@ import (
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 )
 
-// Config for use within the teams plugin.
+const (
+	Scheme   = "teams"
+	dummyURL = "teams://dummy@dummy.com"
+)
+
+// Config represents the configuration for the Teams service.
 type Config struct {
 	standard.EnumlessConfig
 	Group      string `optional:"" url:"user"`
@@ -21,126 +26,119 @@ type Config struct {
 	GroupOwner string `optional:"" url:"path2"`
 	ExtraID    string `optional:"" url:"path3"`
 
-	Title string `key:"title"                  optional:""`
-	Color string `key:"color"                  optional:""`
-	Host  string `key:"host"                   optional:""`
+	Title string `key:"title" optional:""`
+	Color string `key:"color" optional:""`
+	Host  string `key:"host"  optional:""` // Required, no default
 }
 
-func (config *Config) webhookParts() [5]string {
+// WebhookParts returns the webhook components as an array.
+func (config *Config) WebhookParts() [5]string {
 	return [5]string{config.Group, config.Tenant, config.AltID, config.GroupOwner, config.ExtraID}
 }
 
-// SetFromWebhookURL updates the config WebhookParts from a teams webhook URL.
+// SetFromWebhookURL updates the Config from a Teams webhook URL.
 func (config *Config) SetFromWebhookURL(webhookURL string) error {
-	// Extract the organization domain from webhook URL
-	orgPattern, err := regexp.Compile(`https://([^.]+)` + WebhookDomainSuffix + `/`)
+	orgPattern, err := regexp.Compile(`https://([^.]+)` + WebhookDomain + `/`)
 	if err == nil {
 		orgGroups := orgPattern.FindStringSubmatch(webhookURL)
 		if len(orgGroups) == 2 {
-			// Set the organization domain as the host
-			config.Host = orgGroups[1] + WebhookDomainSuffix
+			config.Host = orgGroups[1] + WebhookDomain
 		} else {
 			return fmt.Errorf("invalid webhook URL format - must contain organization domain")
 		}
 	}
-
 	parts, err := parseAndVerifyWebhookURL(webhookURL)
 	if err != nil {
 		return err
 	}
-
 	config.setFromWebhookParts(parts)
-
 	return nil
 }
 
-// ConfigFromWebhookURL creates a new Config from a parsed Teams Webhook URL.
+// ConfigFromWebhookURL creates a new Config from a parsed Teams webhook URL.
 func ConfigFromWebhookURL(webhookURL url.URL) (*Config, error) {
+	webhookURL.RawQuery = "" // Clear query params
 	config := &Config{
 		Host: webhookURL.Host,
 	}
-
 	if err := config.SetFromWebhookURL(webhookURL.String()); err != nil {
 		return nil, err
 	}
-
 	return config, nil
 }
 
-// GetURL returns a URL representation of its current field values.
+// GetURL constructs a URL from the Config fields.
 func (config *Config) GetURL() *url.URL {
 	resolver := format.NewPropKeyResolver(config)
-
 	return config.getURL(&resolver)
 }
 
-// SetURL updates a ServiceConfig from a URL representation of its field values.
+func (config *Config) getURL(resolver types.ConfigQueryResolver) *url.URL {
+	if config.Host == "" {
+		return nil // Host is required
+	}
+	return &url.URL{
+		User:     url.User(config.Group),
+		Host:     config.Tenant,
+		Path:     "/" + config.AltID + "/" + config.GroupOwner + "/" + config.ExtraID,
+		Scheme:   Scheme,
+		RawQuery: format.BuildQuery(resolver),
+	}
+}
+
+// SetURL updates the Config from a URL.
 func (config *Config) SetURL(url *url.URL) error {
 	resolver := format.NewPropKeyResolver(config)
-
 	return config.setURL(&resolver, url)
 }
 
-func (config *Config) getURL(resolver types.ConfigQueryResolver) *url.URL {
-	path := "/" + config.AltID + "/" + config.GroupOwner + "/" + config.ExtraID
-
-	return &url.URL{
-		User:       url.User(config.Group),
-		Host:       config.Tenant,
-		Path:       path,
-		Scheme:     Scheme,
-		ForceQuery: true,
-		RawQuery:   format.BuildQuery(resolver),
-	}
-}
-
 func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) error {
-	var webhookParts [5]string
-
-	if url.String() != "teams://dummy@dummy.com" {
-		parts := strings.Split(url.Path, "/")
-		if parts[0] == "" {
-			parts = parts[1:]
+	var parts [5]string
+	if url.String() != dummyURL {
+		pathParts := strings.Split(url.Path, "/")
+		if pathParts[0] == "" {
+			pathParts = pathParts[1:]
 		}
-
-		if len(parts) < 3 {
+		if len(pathParts) < 3 {
 			return errors.New("invalid URL format: missing extraId component")
 		}
-
-		webhookParts = [5]string{
+		parts = [5]string{
 			url.User.Username(),
 			url.Hostname(),
-			parts[0],
-			parts[1],
-			parts[2],
+			pathParts[0],
+			pathParts[1],
+			pathParts[2],
 		}
-
-		if err := verifyWebhookParts(webhookParts); err != nil {
+		if err := verifyWebhookParts(parts); err != nil {
 			return fmt.Errorf("invalid URL format: %w", err)
 		}
-	} else {
-		webhookParts = [5]string{url.User.Username(), url.Hostname(), "", "", ""}
+	}
+	config.setFromWebhookParts(parts)
+
+	config.Color = ""
+	config.Host = ""
+	config.Title = ""
+
+	query := url.Query()
+	for key, vals := range query {
+		if vals[0] != "" {
+			switch key {
+			case "color":
+				config.Color = vals[0]
+			case "host":
+				config.Host = vals[0]
+			case "title":
+				config.Title = vals[0]
+			}
+			if err := resolver.Set(key, vals[0]); err != nil {
+				return err
+			}
+		}
 	}
 
-	config.setFromWebhookParts(webhookParts)
-
-	// Set the organization domain as the host if provided in query parameters
-	hostFound := false
-	for key, vals := range url.Query() {
-		if key == "host" && vals[0] != "" {
-			config.Host = vals[0]
-			hostFound = true
-		}
-		if err := resolver.Set(key, vals[0]); err != nil {
-			return err
-		}
-	}
-
-	// Require host parameter
-	if !hostFound {
+	if config.Host == "" {
 		return fmt.Errorf("missing required host parameter (organization.webhook.office.com)")
 	}
-
 	return nil
 }
 
