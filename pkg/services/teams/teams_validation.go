@@ -38,19 +38,33 @@ func parseAndVerifyWebhookURL(webhookURL string) ([5]string, error) {
 }
 
 // verifyWebhookParts ensures webhook components meet format requirements.
+// It checks lengths of Group, Tenant, AltID, and GroupOwner, and ensures ExtraID is present.
+// Returns an error if any component is invalid.
 func verifyWebhookParts(parts [5]string) error {
-	if len(parts[0]) != UUID4Length && parts[0] != "" {
-		return fmt.Errorf("group ID must be %d characters, got %d", UUID4Length, len(parts[0]))
+	type partSpec struct {
+		name     string
+		length   int
+		index    int
+		optional bool
 	}
-	if len(parts[1]) != UUID4Length && parts[1] != "" {
-		return fmt.Errorf("tenant ID must be %d characters, got %d", UUID4Length, len(parts[1]))
+	specs := []partSpec{
+		{name: "group ID", length: UUID4Length, index: 0, optional: true},
+		{name: "tenant ID", length: UUID4Length, index: 1, optional: true},
+		{name: "altID", length: HashLength, index: 2, optional: true},
+		{name: "groupOwner", length: UUID4Length, index: 3, optional: true},
 	}
-	if len(parts[2]) != HashLength && parts[2] != "" {
-		return fmt.Errorf("altID must be %d characters, got %d", HashLength, len(parts[2]))
+
+	for _, spec := range specs {
+		if len(parts[spec.index]) != spec.length && parts[spec.index] != "" {
+			return fmt.Errorf(
+				"%s must be %d characters, got %d",
+				spec.name,
+				spec.length,
+				len(parts[spec.index]),
+			)
+		}
 	}
-	if len(parts[3]) != UUID4Length && parts[3] != "" {
-		return fmt.Errorf("groupOwner must be %d characters, got %d", UUID4Length, len(parts[3]))
-	}
+
 	if parts[4] == "" {
 		return fmt.Errorf("extraID is required")
 	}
