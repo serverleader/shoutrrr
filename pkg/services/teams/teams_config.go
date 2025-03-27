@@ -92,36 +92,66 @@ func (config *Config) SetURL(url *url.URL) error {
 	return config.setURL(&resolver, url)
 }
 
+// setURL updates the Config from a URL using the provided resolver.
+// It parses the URL parts, sets query parameters, and ensures the host is specified.
+// Returns an error if the URL is invalid or the host is missing.
 func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) error {
-	var parts [5]string
-	if url.String() != dummyURL {
-		pathParts := strings.Split(url.Path, "/")
-		if pathParts[0] == "" {
-			pathParts = pathParts[1:]
-		}
-		if len(pathParts) < 3 {
-			return errors.New("invalid URL format: missing extraId component")
-		}
-		parts = [5]string{
-			url.User.Username(),
-			url.Hostname(),
-			pathParts[0],
-			pathParts[1],
-			pathParts[2],
-		}
-		if err := verifyWebhookParts(parts); err != nil {
-			return fmt.Errorf("invalid URL format: %w", err)
-		}
+	parts, err := parseURLParts(url)
+	if err != nil {
+		return err
 	}
 	config.setFromWebhookParts(parts)
 
+	if err := config.setQueryParams(resolver, url.Query()); err != nil {
+		return err
+	}
+
+	if config.Host == "" {
+		return fmt.Errorf("missing required host parameter (organization.webhook.office.com)")
+	}
+	return nil
+}
+
+// parseURLParts extracts and validates webhook components from a URL.
+// It handles path splitting and verification, returning the parts as an array.
+// Returns an error if the URL format is invalid or components fail verification.
+func parseURLParts(url *url.URL) ([5]string, error) {
+	var parts [5]string
+	if url.String() == dummyURL {
+		return parts, nil
+	}
+
+	pathParts := strings.Split(url.Path, "/")
+	if pathParts[0] == "" {
+		pathParts = pathParts[1:]
+	}
+	if len(pathParts) < 3 {
+		return parts, errors.New("invalid URL format: missing extraId component")
+	}
+
+	parts = [5]string{
+		url.User.Username(),
+		url.Hostname(),
+		pathParts[0],
+		pathParts[1],
+		pathParts[2],
+	}
+	if err := verifyWebhookParts(parts); err != nil {
+		return parts, fmt.Errorf("invalid URL format: %w", err)
+	}
+	return parts, nil
+}
+
+// setQueryParams applies query parameters to the Config using the resolver.
+// It resets Color, Host, and Title, then updates them based on query values.
+// Returns an error if the resolver fails to set any parameter.
+func (config *Config) setQueryParams(resolver types.ConfigQueryResolver, query url.Values) error {
 	config.Color = ""
 	config.Host = ""
 	config.Title = ""
 
-	query := url.Query()
 	for key, vals := range query {
-		if vals[0] != "" {
+		if len(vals) > 0 && vals[0] != "" {
 			switch key {
 			case "color":
 				config.Color = vals[0]
@@ -134,10 +164,6 @@ func (config *Config) setURL(resolver types.ConfigQueryResolver, url *url.URL) e
 				return err
 			}
 		}
-	}
-
-	if config.Host == "" {
-		return fmt.Errorf("missing required host parameter (organization.webhook.office.com)")
 	}
 	return nil
 }
